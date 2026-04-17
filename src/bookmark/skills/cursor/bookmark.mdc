@@ -1,0 +1,11 @@
+---
+description: Bookmark session save/resume
+globs: []
+alwaysApply: false
+---
+When user says "bookmark this" or "save session":
+Run: `bookmark save --source cursor --transcript-stdin -m "<current goal>"`
+Pipe recent messages as JSON-lines to stdin.
+
+When user says "resume [name]" or "what was I working on":
+Run: `bookmark resume [name or latest]`

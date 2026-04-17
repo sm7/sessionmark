@@ -1,0 +1,36 @@
+# Codex Session Context: {{ bookmark.name }}
+
+**Objective:** {{ bookmark.goal or "(no goal set)" }}
+**Repo:** `{{ bookmark.repo_root }}`
+{% if bookmark.git_branch %}**Branch:** `{{ bookmark.git_branch }}` @ `{{ bookmark.git_head[:7] if bookmark.git_head else "unknown" }}`{% endif %}
+**Saved by:** bookmark-cli (source: {{ bookmark.source }})
+
+## Conversation History
+{% if transcript %}
+{% for msg in transcript[-4:] %}
+[{{ msg.role | upper }}] {{ msg.content | truncate(300) }}
+{% endfor %}
+{% else %}
+(no transcript captured)
+{% endif %}
+
+## Pending Tasks
+{% if pending_todos %}
+{% for todo in pending_todos %}
+- [ ] {{ todo.text }}
+{% endfor %}
+{% else %}
+(no pending tasks)
+{% endif %}
+
+## Changed Files
+{% if open_files %}
+{% for f in open_files %}
+{{ f.status }} {{ f.path }}
+{% endfor %}
+{% else %}
+(no recently modified files)
+{% endif %}
+
+---
+Please confirm you have loaded this context before proceeding.

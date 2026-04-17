@@ -1,0 +1,37 @@
+## Gemini — Resumed Session: {{ bookmark.name }}
+
+I'm picking up where I left off. Context from bookmark-cli:
+
+**Goal:** {{ bookmark.goal or "(no goal set)" }}
+**Working directory:** `{{ bookmark.repo_root }}`
+{% if bookmark.git_branch %}**Git branch:** `{{ bookmark.git_branch }}` ({{ bookmark.git_head[:7] if bookmark.git_head else "unknown" }}){% endif %}
+
+### Recent Conversation
+{% if transcript %}
+{% for msg in transcript[-4:] %}
+- **{{ msg.role | title }}**: {{ msg.content | truncate(300) }}
+{% endfor %}
+{% else %}
+_(no transcript available)_
+{% endif %}
+
+### Open Action Items
+{% if pending_todos %}
+{% for todo in pending_todos %}
+- [ ] {{ todo.text }}
+{% endfor %}
+{% else %}
+_(none recorded)_
+{% endif %}
+
+### Files in Progress
+{% if open_files %}
+{% for f in open_files %}
+- `{{ f.path }}` — {{ f.status }}
+{% endfor %}
+{% else %}
+_(no modified files recorded)_
+{% endif %}
+
+---
+Please acknowledge this Gemini session context and indicate what to work on next.

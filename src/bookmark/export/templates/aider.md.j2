@@ -1,0 +1,38 @@
+# aider session context — {{ bookmark.name }}
+
+> Loaded from bookmark-cli. Goal: {{ bookmark.goal or "(no goal set)" }}
+
+Repo: {{ bookmark.repo_root }}
+{% if bookmark.git_branch %}Branch: {{ bookmark.git_branch }} ({{ bookmark.git_head[:7] if bookmark.git_head else "unknown" }}){% endif %}
+
+## What we were doing
+{% if transcript %}
+{% for msg in transcript[-4:] %}
+<{{ msg.role }}>
+{{ msg.content | truncate(300) }}
+</{{ msg.role }}>
+{% endfor %}
+{% else %}
+(no transcript available)
+{% endif %}
+
+## TODOs remaining
+{% if pending_todos %}
+{% for todo in pending_todos %}
+- [ ] {{ todo.text }}
+{% endfor %}
+{% else %}
+(none)
+{% endif %}
+
+## Files touched
+{% if open_files %}
+{% for f in open_files %}
+/add {{ f.path }}
+{% endfor %}
+{% else %}
+(none recorded)
+{% endif %}
+
+---
+Please confirm context is loaded. Run /help to see aider commands.

@@ -1,0 +1,154 @@
+"""Per-agent fallback reader tests — §11.7 of design doc."""
+import json
+from pathlib import Path
+
+
+def test_claude_code_reader_empty_when_no_sessions(tmp_path):
+    from bookmark.capture.agents.claude_code import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path / "project"), _base_dir=tmp_path)
+    assert result == []
+
+
+def test_claude_code_reader_finds_matching_session(tmp_path):
+    """Finds session by cwd stored in the jsonl."""
+    # Set up fake ~/.claude/projects/ structure
+    claude_home = tmp_path / ".claude" / "projects" / "abc123"
+    claude_home.mkdir(parents=True)
+    session_file = claude_home / "session-001.jsonl"
+
+    project_cwd = str(tmp_path / "myproject")
+    lines = [
+        json.dumps({"cwd": project_cwd, "type": "meta"}),
+        json.dumps({"type": "say", "say": "user", "text": "fix the bug"}),
+        json.dumps({"type": "say", "say": "assistant", "text": "Here's the fix"}),
+    ]
+    session_file.write_text("\n".join(lines))
+
+    from bookmark.capture.agents.claude_code import read_recent_transcript
+    result = read_recent_transcript(project_cwd, _base_dir=tmp_path)
+    assert len(result) == 2
+    assert result[0]["role"] == "user"
+    assert "fix the bug" in result[0]["content"]
+
+
+def test_claude_code_reader_no_match_returns_empty(tmp_path):
+    """Returns empty list when cwd doesn't match any session."""
+    claude_home = tmp_path / ".claude" / "projects" / "abc123"
+    claude_home.mkdir(parents=True)
+    session_file = claude_home / "session-001.jsonl"
+
+    # Session has a different cwd
+    lines = [
+        json.dumps({"cwd": "/some/other/path", "type": "meta"}),
+        json.dumps({"type": "say", "say": "user", "text": "hello"}),
+    ]
+    session_file.write_text("\n".join(lines))
+
+    from bookmark.capture.agents.claude_code import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path / "myproject"), _base_dir=tmp_path)
+    assert result == []
+
+
+def test_aider_reader_parses_history(tmp_path):
+    """Aider reader parses .aider.chat.history.md."""
+    history = tmp_path / ".aider.chat.history.md"
+    history.write_text(
+        "#### human\n\nfix the auth bug\n\n"
+        "#### assistant\n\nHere's what I found in auth.py...\n\n"
+    )
+    from bookmark.capture.agents.aider import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path))
+    assert len(result) == 2
+    assert result[0]["role"] == "user"
+    assert "fix the auth bug" in result[0]["content"]
+    assert result[1]["role"] == "assistant"
+
+
+def test_aider_reader_empty_when_no_file(tmp_path):
+    from bookmark.capture.agents.aider import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path))
+    assert result == []
+
+
+def test_aider_reader_user_role(tmp_path):
+    """'user' header is also recognized."""
+    history = tmp_path / ".aider.chat.history.md"
+    history.write_text(
+        "#### user\n\nhelp me refactor\n\n"
+        "#### assistant\n\nSure, here is the plan.\n\n"
+    )
+    from bookmark.capture.agents.aider import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path))
+    assert result[0]["role"] == "user"
+    assert result[1]["role"] == "assistant"
+
+
+def test_aider_reader_n_messages_limit(tmp_path):
+    """n_messages parameter limits returned messages."""
+    history = tmp_path / ".aider.chat.history.md"
+    lines = []
+    for i in range(10):
+        lines.append(f"#### human\n\nmessage {i}\n")
+        lines.append(f"#### assistant\n\nreply {i}\n")
+    history.write_text("\n".join(lines))
+    from bookmark.capture.agents.aider import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path), n_messages=4)
+    assert len(result) == 4
+
+
+def test_get_agent_reader_returns_correct_type():
+    from bookmark.capture.agents import get_agent_reader
+    for source in ["claude-code", "cursor", "codex", "gemini", "aider"]:
+        reader = get_agent_reader(source)
+        assert reader is not None, f"Expected reader for {source}"
+        assert hasattr(reader, "read_recent_transcript"), f"Missing method for {source}"
+
+    assert get_agent_reader("terminal") is None
+    assert get_agent_reader("generic") is None
+
+
+def test_codex_reader_empty_when_no_dir(tmp_path):
+    from bookmark.capture.agents.codex import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path), _base_dir=tmp_path)
+    assert result == []
+
+
+def test_codex_reader_finds_session(tmp_path):
+    """Codex reader finds most recent session file."""
+    sessions_dir = tmp_path / ".codex" / "sessions"
+    sessions_dir.mkdir(parents=True)
+    session_file = sessions_dir / "session-001.jsonl"
+    lines = [
+        json.dumps({"role": "user", "content": "write a test"}),
+        json.dumps({"role": "assistant", "content": "Here is a test for you."}),
+    ]
+    session_file.write_text("\n".join(lines))
+
+    from bookmark.capture.agents.codex import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path), _base_dir=tmp_path)
+    assert len(result) == 2
+    assert result[0]["role"] == "user"
+    assert result[1]["role"] == "assistant"
+
+
+def test_gemini_reader_empty_when_no_dir(tmp_path):
+    from bookmark.capture.agents.gemini import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path), _base_dir=tmp_path)
+    assert result == []
+
+
+def test_gemini_reader_finds_session(tmp_path):
+    """Gemini reader finds session in .gemini/sessions dir."""
+    sessions_dir = tmp_path / ".gemini" / "sessions"
+    sessions_dir.mkdir(parents=True)
+    session_file = sessions_dir / "session-001.jsonl"
+    lines = [
+        json.dumps({"role": "user", "content": "explain this code"}),
+        json.dumps({"role": "assistant", "content": "This code does X."}),
+    ]
+    session_file.write_text("\n".join(lines))
+
+    from bookmark.capture.agents.gemini import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path), _base_dir=tmp_path)
+    assert len(result) == 2
+    assert result[0]["role"] == "user"

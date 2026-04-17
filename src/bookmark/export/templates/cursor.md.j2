@@ -1,0 +1,37 @@
+<!-- Cursor IDE bookmark context -->
+# Session Resumed: {{ bookmark.name }}
+
+> **Goal:** {{ bookmark.goal or "(no goal set)" }}
+
+**Repository:** `{{ bookmark.repo_root }}`
+{% if bookmark.git_branch %}**Branch:** `{{ bookmark.git_branch }}` @ `{{ bookmark.git_head[:7] if bookmark.git_head else "unknown" }}`{% endif %}
+
+## Last Exchange
+{% if transcript %}
+{% for msg in transcript[-4:] %}
+**{{ msg.role | title }}:** {{ msg.content | truncate(300) }}
+{% endfor %}
+{% else %}
+_(no transcript captured)_
+{% endif %}
+
+## TODOs
+{% if pending_todos %}
+{% for todo in pending_todos %}
+- [ ] {{ todo.text }}
+{% endfor %}
+{% else %}
+_(no open TODOs)_
+{% endif %}
+
+## Modified Files
+{% if open_files %}
+{% for f in open_files %}
+- `{{ f.path }}` ({{ f.status }})
+{% endfor %}
+{% else %}
+_(no recently modified files)_
+{% endif %}
+
+---
+[Cursor] Please acknowledge this context before taking any action.

@@ -1,0 +1,40 @@
+# Resuming: {{ bookmark.name }}
+
+I'm continuing work from a saved session. Here's the context:
+
+## Goal
+{{ bookmark.goal or "(no goal set)" }}
+
+## Where I Left Off
+Repository: `{{ bookmark.repo_root }}`
+{% if bookmark.git_branch %}Branch: `{{ bookmark.git_branch }}` @ `{{ bookmark.git_head[:7] if bookmark.git_head else "unknown" }}`{% endif %}
+
+## Last Exchange
+{% if transcript %}
+{% for msg in transcript[-4:] %}
+**{{ msg.role | title }}:** {{ msg.content | truncate(300) }}
+{% endfor %}
+{% else %}
+_(no transcript captured)_
+{% endif %}
+
+## Open TODOs
+{% if pending_todos %}
+{% for todo in pending_todos %}
+- [ ] {{ todo.text }}
+{% endfor %}
+{% else %}
+_(no open TODOs)_
+{% endif %}
+
+## Open Files
+{% if open_files %}
+{% for f in open_files %}
+- `{{ f.path }}` ({{ f.status }})
+{% endfor %}
+{% else %}
+_(no recently modified files)_
+{% endif %}
+
+---
+Please acknowledge this context before taking any action. What would you like to do next?
