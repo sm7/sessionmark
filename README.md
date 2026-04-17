@@ -5,9 +5,9 @@
 You're deep in a debugging thread. A meeting pops up. Or you close the laptop. Or you switch from Claude Code to Cursor. 90 minutes later, the thread is gone.
 
 ```bash
-bookmark save -m "focal loss regression — gamma=3 breaks minority class"
+sessionmark save -m "focal loss regression — gamma=3 breaks minority class"
 # ...tomorrow, different machine, different agent...
-bookmark resume
+sessionmark resume
 ```
 
 ```
@@ -38,7 +38,7 @@ NEXT STEP
 
 Local-first. No cloud. No auth. Works with Claude Code, Cursor, Codex CLI, Gemini CLI, Aider — and any MCP client.
 
-> **Cross-agent fidelity caveat:** bookmark recovers the thread of thought, not live runtime state. Goal, files, TODOs, and recent exchange carry over. Open DB connections, running dev servers, and the original agent's native tool reasoning do not.
+> **Cross-agent fidelity caveat:** sessionmark recovers the thread of thought, not live runtime state. Goal, files, TODOs, and recent exchange carry over. Open DB connections, running dev servers, and the original agent's native tool reasoning do not.
 
 ---
 
@@ -68,16 +68,16 @@ pip install "sessionmark[llm]"
 
 ```bash
 # 1. Save where you are
-bookmark save wip -m "fixing the login race condition"
+sessionmark save wip -m "fixing the login race condition"
 
 # 2. See all your sessions
-bookmark list
+sessionmark list
 
 # 3. Pick up where you left off
-bookmark resume wip
+sessionmark resume wip
 
 # 4. Drop it into any agent
-bookmark export wip --format paste --target cursor | pbcopy
+sessionmark export wip --format paste --target cursor | pbcopy
 # paste as your first message in a new Cursor chat
 ```
 
@@ -86,33 +86,33 @@ bookmark export wip --format paste --target cursor | pbcopy
 ## All commands
 
 ```
-bookmark save [NAME] [-m MSG] [--tag TAG] [--source AGENT] [--transcript-stdin]
-bookmark resume [NAME|latest] [--apply] [--json]
-bookmark show [NAME|latest] [--full] [--no-transcript] [--json]
-bookmark list [--repo REPO] [--tag TAG] [--source AGENT] [-n N] [--all] [--json]
-bookmark search QUERY [-n N] [--json]
-bookmark diff NAME1 [NAME2]
-bookmark delete NAME [-f]
-bookmark export NAME [--format paste|md|json] [--target AGENT] [-o FILE]
-bookmark import FILE
+sessionmark save [NAME] [-m MSG] [--tag TAG] [--source AGENT] [--transcript-stdin]
+sessionmark resume [NAME|latest] [--apply] [--json]
+sessionmark show [NAME|latest] [--full] [--no-transcript] [--json]
+sessionmark list [--repo REPO] [--tag TAG] [--source AGENT] [-n N] [--all] [--json]
+sessionmark search QUERY [-n N] [--json]
+sessionmark diff NAME1 [NAME2]
+sessionmark delete NAME [-f]
+sessionmark export NAME [--format paste|md|json] [--target AGENT] [-o FILE]
+sessionmark import FILE
 
-bookmark install --for AGENT|all       # install skill/command files for an agent
-bookmark install --list                 # show installed agents
-bookmark install --hooks                # Claude Code PreCompact + SessionEnd hooks
+sessionmark install --for AGENT|all       # install skill/command files for an agent
+sessionmark install --list                 # show installed agents
+sessionmark install --hooks                # Claude Code PreCompact + SessionEnd hooks
 
-bookmark sync init --git URL            # set up git-backed sync
-bookmark sync push                      # push to remote
-bookmark sync pull                      # pull from remote
-bookmark sync clone URL                 # clone onto a new machine
+sessionmark sync init --git URL            # set up git-backed sync
+sessionmark sync push                      # push to remote
+sessionmark sync pull                      # pull from remote
+sessionmark sync clone URL                 # clone onto a new machine
 
-bookmark config get KEY                 # e.g. briefing.provider
-bookmark config set KEY VALUE
+sessionmark config get KEY                 # e.g. briefing.provider
+sessionmark config set KEY VALUE
 
-bookmark doctor                         # health check: DB, blobs, agents, MCP
-bookmark doctor --check-redaction       # verify secrets corpus is caught
+sessionmark doctor                         # health check: DB, blobs, agents, MCP
+sessionmark doctor --check-redaction       # verify secrets corpus is caught
 ```
 
-**Short alias:** `bm` = `bookmark`
+**Short alias:** `sm` = `sessionmark`
 
 **Name resolution** for `show`, `resume`, `diff`, `delete`, `export`:
 1. `latest` → most recently saved
@@ -127,25 +127,25 @@ bookmark doctor --check-redaction       # verify secrets corpus is caught
 
 ## Shipping as a Claude Code skill
 
-A **skill** is a markdown file that tells Claude Code when and how to invoke `bookmark`. One command writes it:
+A **skill** is a markdown file that tells Claude Code when and how to invoke `sessionmark`. One command writes it:
 
 ```bash
-bookmark install --for claude-code
+sessionmark install --for claude-code
 ```
 
-This drops `.claude/skills/bookmark/SKILL.md` into your current directory. Claude Code picks it up automatically on the next session.
+This drops `.claude/skills/sessionmark/SKILL.md` into your current directory. Claude Code picks it up automatically on the next session.
 
 **What the skill does:**
 
 | You say | Claude Code runs |
 |---|---|
-| "bookmark this" / "save session" / "I need to stop" | `bookmark save --source claude-code --transcript-stdin -m "<goal>"` piping recent messages |
-| "resume" / "what was I working on" / "load bookmark auth-fix" | `bookmark resume [name or latest]` |
+| "sessionmark this" / "save session" / "I need to stop" | `sessionmark save --source claude-code --transcript-stdin -m "<goal>"` piping recent messages |
+| "resume" / "what was I working on" / "load sessionmark auth-fix" | `sessionmark resume [name or latest]` |
 
 **Install for every agent at once:**
 
 ```bash
-bookmark install --for all
+sessionmark install --for all
 ```
 
 This drops skill/command files for Claude Code, Cursor, Codex CLI, Gemini CLI, and Aider in one shot. Re-running is a no-op if the files are already current.
@@ -154,42 +154,42 @@ This drops skill/command files for Claude Code, Cursor, Codex CLI, Gemini CLI, a
 
 | Agent | File written |
 |---|---|
-| Claude Code | `.claude/skills/bookmark/SKILL.md` |
-| Cursor | `.cursor/rules/bookmark.mdc` |
-| Codex CLI | `.codex/commands/bookmark.md` |
-| Gemini CLI | `.gemini/commands/bookmark.md` |
-| Aider | `CONVENTIONS.md` (bookmark section appended) |
+| Claude Code | `.claude/skills/sessionmark/SKILL.md` |
+| Cursor | `.cursor/rules/sessionmark.mdc` |
+| Codex CLI | `.codex/commands/sessionmark.md` |
+| Gemini CLI | `.gemini/commands/sessionmark.md` |
+| Aider | `CONVENTIONS.md` (sessionmark section appended) |
 
 **Dry-run to preview:**
 
 ```bash
-bookmark install --for all --dry-run
+sessionmark install --for all --dry-run
 ```
 
-**Opt-in Claude Code hooks** — auto-bookmark on compaction and session end:
+**Opt-in Claude Code hooks** — auto-sessionmark on compaction and session end:
 
 ```bash
-bookmark install --hooks
+sessionmark install --hooks
 ```
 
-Adds `PreCompact` and `SessionEnd` entries to `.claude/settings.json`. These run `bookmark save --auto` silently in the background. Auto-bookmarks are hidden in `bookmark list` by default; use `--all` to see them.
+Adds `PreCompact` and `SessionEnd` entries to `.claude/settings.json`. These run `sessionmark save --auto` silently in the background. Auto-sessionmarks are hidden in `sessionmark list` by default; use `--all` to see them.
 
 **Manual skill content** (if you prefer to copy-paste instead of running `install`):
 
-For Claude Code, create `.claude/skills/bookmark/SKILL.md`:
+For Claude Code, create `.claude/skills/sessionmark/SKILL.md`:
 
 ```markdown
-# Bookmark skill
+# sessionmark skill
 
-When the user says "bookmark this", "save session", "I need to stop", or similar:
+When the user says "sessionmark this", "save session", "I need to stop", or similar:
 
-Run: `bookmark save --source claude-code --transcript-stdin -m "<one-line summary of current goal>"`
+Run: `sessionmark save --source claude-code --transcript-stdin -m "<one-line summary of current goal>"`
 Pipe the last 20 messages of the conversation as JSON-lines to stdin:
 {"role": "user", "content": "...", "timestamp": "..."}
 {"role": "assistant", "content": "...", "timestamp": "..."}
 
-When the user says "resume", "what was I working on", or "load bookmark <name>":
-Run: `bookmark resume [name or latest]`
+When the user says "resume", "what was I working on", or "load sessionmark <name>":
+Run: `sessionmark resume [name or latest]`
 Show the output to the user.
 ```
 
@@ -197,7 +197,7 @@ Show the output to the user.
 
 ## Shipping as an MCP server
 
-The MCP server lets **any MCP-compatible agent** call bookmark tools directly — no skill file needed.
+The MCP server lets **any MCP-compatible agent** call sessionmark tools directly — no skill file needed.
 
 ### Start the server
 
@@ -215,11 +215,11 @@ sessionmark-mcp --http --port 7337   # coming in v0.2
 
 | Tool | Arguments | Returns |
 |---|---|---|
-| `bookmark_save` | `name`, `message`, `tags` | `{id, name, summary}` |
-| `bookmark_resume` | `name` (default `"latest"`) | `{briefing, goal, open_files, todos, next_step, source, saved_at}` |
-| `bookmark_list` | `repo`, `tag`, `limit` | `[{name, when, goal}]` |
-| `bookmark_search` | `query`, `limit` | `[{name, snippet, score}]` |
-| `bookmark_show` | `name` | full bookmark record |
+| `sessionmark_save` | `name`, `message`, `tags` | `{id, name, summary}` |
+| `sessionmark_resume` | `name` (default `"latest"`) | `{briefing, goal, open_files, todos, next_step, source, saved_at}` |
+| `sessionmark_list` | `repo`, `tag`, `limit` | `[{name, when, goal}]` |
+| `sessionmark_search` | `query`, `limit` | `[{name, snippet, score}]` |
+| `sessionmark_show` | `name` | full sessionmark record |
 
 All results are structured JSON — the agent formats for the user.
 
@@ -230,7 +230,7 @@ Add to your Claude Code MCP config (`~/.claude/claude_desktop_config.json` or th
 ```json
 {
   "mcpServers": {
-    "bookmark": {
+    "sessionmark": {
       "command": "sessionmark-mcp",
       "args": []
     }
@@ -242,9 +242,9 @@ Restart Claude Code. The tools appear automatically. You can then say:
 
 > "Save this session as auth-refactor"  
 > "What was I working on yesterday?"  
-> "Resume my last bookmark"
+> "Resume my last sessionmark"
 
-and Claude Code calls `bookmark_save` / `bookmark_list` / `bookmark_resume` directly.
+and Claude Code calls `sessionmark_save` / `sessionmark_list` / `sessionmark_resume` directly.
 
 ### Wiring into Cursor
 
@@ -252,7 +252,7 @@ In Cursor's MCP settings (Settings → MCP):
 
 ```json
 {
-  "bookmark": {
+  "sessionmark": {
     "command": "sessionmark-mcp",
     "args": [],
     "type": "stdio"
@@ -262,7 +262,7 @@ In Cursor's MCP settings (Settings → MCP):
 
 ### Wiring into any MCP client
 
-Any client that supports stdio MCP servers works. The server binary is `sessionmark-mcp` (installed alongside `bookmark` when you `pip install sessionmark`).
+Any client that supports stdio MCP servers works. The server binary is `sessionmark-mcp` (installed alongside `sessionmark` when you `pip install sessionmark`).
 
 **Verify the server starts:**
 
@@ -270,10 +270,10 @@ Any client that supports stdio MCP servers works. The server binary is `sessionm
 echo '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"0"}},"id":1}' | sessionmark-mcp
 ```
 
-**Verify with `bookmark doctor`:**
+**Verify with `sessionmark doctor`:**
 
 ```bash
-bookmark doctor
+sessionmark doctor
 ```
 
 Look for `✓ MCP server` in the output.
@@ -282,55 +282,55 @@ Look for `✓ MCP server` in the output.
 
 ## Multi-agent workflow
 
-Bookmark is built for users who float between agents. All bookmarks land in one SQLite database regardless of which agent captured them.
+Sessionmark is built for users who float between agents. All sessionmarks land in one SQLite database regardless of which agent captured them.
 
 ```bash
 # Monday: deep in Claude Code
-bookmark save focal-debug -m "gamma=3 breaks minority class"
+sessionmark save focal-debug -m "gamma=3 breaks minority class"
 
 # Tuesday: switch to Cursor
-bookmark resume focal-debug
+sessionmark resume focal-debug
 # → prints full briefing, past exchange, open files, TODOs
 
 # Export for paste into any agent or web chat
-bookmark export focal-debug --format paste --target cursor | pbcopy
+sessionmark export focal-debug --format paste --target cursor | pbcopy
 ```
 
 Filter by capturing agent:
 
 ```bash
-bookmark list --source claude-code
-bookmark list --source cursor
-bookmark list --source codex
+sessionmark list --source claude-code
+sessionmark list --source cursor
+sessionmark list --source codex
 ```
 
 ---
 
 ## LLM briefing providers (optional)
 
-By default, `bookmark resume` renders a deterministic template briefing — no network, no API key. Optionally configure a local or remote LLM to summarize the transcript:
+By default, `sessionmark resume` renders a deterministic template briefing — no network, no API key. Optionally configure a local or remote LLM to summarize the transcript:
 
 ```bash
 # Local Ollama
-bookmark config set briefing.provider "ollama:qwen2.5-coder:7b"
+sessionmark config set briefing.provider "ollama:qwen2.5-coder:7b"
 
 # Anthropic (needs ANTHROPIC_API_KEY env var)
-bookmark config set briefing.provider "anthropic:claude-haiku-4-5"
+sessionmark config set briefing.provider "anthropic:claude-haiku-4-5"
 
 # OpenAI
-bookmark config set briefing.provider "openai:gpt-4o-mini"
+sessionmark config set briefing.provider "openai:gpt-4o-mini"
 
 # Google
-bookmark config set briefing.provider "google:gemini-2.5-flash"
+sessionmark config set briefing.provider "google:gemini-2.5-flash"
 
 # Groq
-bookmark config set briefing.provider "groq:llama-3.3-70b"
+sessionmark config set briefing.provider "groq:llama-3.3-70b"
 
 # Any OpenAI-compatible endpoint
-bookmark config set briefing.provider "openai-compat:http://localhost:8080:mymodel"
+sessionmark config set briefing.provider "openai-compat:http://localhost:8080:mymodel"
 
 # Back to default
-bookmark config set briefing.provider "template"
+sessionmark config set briefing.provider "template"
 ```
 
 API keys come from **environment variables only** — never written to config:
@@ -350,17 +350,17 @@ pip install "sessionmark[llm]"
 
 ```bash
 # Machine A
-bookmark sync init --git git@github.com:you/my-bookmarks.git
-bookmark sync push
+sessionmark sync init --git git@github.com:you/my-sessionmarks.git
+sessionmark sync push
 
 # Machine B
-bookmark sync clone git@github.com:you/my-bookmarks.git
-bookmark resume focal-debug
+sessionmark sync clone git@github.com:you/my-sessionmarks.git
+sessionmark resume focal-debug
 ```
 
-Sync is a git repo you own. Bookmark never talks to a proprietary server.
+Sync is a git repo you own. Sessionmark never talks to a proprietary server.
 
-> **v0.1.0 limitation:** `sync pull` overwrites the local `bookmarks.db`. Back up first if you have unsynchronized local bookmarks. Merge-on-pull is planned for v0.2.
+> **v0.1.0 limitation:** `sync pull` overwrites the local `sessionmarks.db`. Back up first if you have unsynchronized local sessionmarks. Merge-on-pull is planned for v0.2.
 
 ---
 
@@ -381,7 +381,7 @@ Every piece of captured text (transcript, todos, env vars, goal) passes through 
 Verify your installation catches all patterns:
 
 ```bash
-bookmark doctor --check-redaction
+sessionmark doctor --check-redaction
 # PASS: 10/10 lines redacted correctly
 ```
 
@@ -389,12 +389,12 @@ bookmark doctor --check-redaction
 
 ## Storage
 
-Everything lives under `~/.bookmark/` (override with `$BOOKMARK_HOME`):
+Everything lives under `~/.sessionmark/` (override with `$SESSIONMARK_HOME`):
 
 ```
-~/.bookmark/
+~/.sessionmark/
 ├── config.toml
-├── bookmarks.db          # SQLite — all agents, one DB
+├── sessionmarks.db          # SQLite — all agents, one DB
 ├── blobs/
 │   ├── tr/<id>/          # transcripts (JSONL)
 │   └── <sha256>/         # files + diffs (gzip, content-addressed)
@@ -407,11 +407,11 @@ Everything lives under `~/.bookmark/` (override with `$BOOKMARK_HOME`):
 ## Configuration
 
 ```bash
-bookmark config get briefing.provider
-bookmark config set briefing.provider "ollama:qwen2.5-coder:7b"
+sessionmark config get briefing.provider
+sessionmark config set briefing.provider "ollama:qwen2.5-coder:7b"
 ```
 
-Full config reference (`~/.bookmark/config.toml`):
+Full config reference (`~/.sessionmark/config.toml`):
 
 ```toml
 [general]
