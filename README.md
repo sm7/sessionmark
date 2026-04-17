@@ -1,4 +1,4 @@
-# bookmark
+# Bookmark your sessions 
 
 **Git, but for your AI coding sessions.**
 
