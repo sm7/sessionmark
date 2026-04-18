@@ -11,8 +11,9 @@ class AnthropicProvider:
         self.model = model
 
     def generate(self, context: dict) -> str:
-        import httpx
         import os
+
+        import httpx
         api_key = os.environ.get("ANTHROPIC_API_KEY", "")
         if not api_key:
             raise ValueError("ANTHROPIC_API_KEY not set")

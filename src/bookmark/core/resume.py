@@ -15,15 +15,13 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
-from pathlib import Path
-from typing import Optional
 
 from bookmark.config import Config, load_config
-from bookmark.core.models import Bookmark, FileEntry, TodoItem
-from bookmark.storage.db import get_env, get_todos, open_db, resolve_name, list_bookmarks
+from bookmark.core.models import Bookmark, FileEntry
+from bookmark.storage.db import get_todos, list_bookmarks, open_db, resolve_name
 
 
-def _load_config_and_conn(config: Optional[Config] = None):
+def _load_config_and_conn(config: Config | None = None):
     """Return (config, conn) for the current bookmark home."""
     if config is None:
         config = load_config()
@@ -101,7 +99,7 @@ def resume_bookmark(
     name: str = "latest",
     apply: bool = False,
     as_json: bool = False,
-    config: Optional[Config] = None,
+    config: Config | None = None,
 ) -> Bookmark:
     """Load a bookmark and render its briefing.
 
@@ -181,7 +179,7 @@ def show_bookmark(
     full: bool = False,
     no_transcript: bool = False,
     as_json: bool = False,
-    config: Optional[Config] = None,
+    config: Config | None = None,
 ) -> Bookmark:
     """Load a bookmark and render its briefing (no NEXT STEP section).
 

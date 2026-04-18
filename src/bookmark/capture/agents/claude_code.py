@@ -11,7 +11,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
 
 def _hash_project_path(path: str) -> str:
@@ -21,7 +20,7 @@ def _hash_project_path(path: str) -> str:
 def read_recent_transcript(
     cwd: str,
     n_messages: int = 20,
-    _base_dir: Optional[Path] = None,
+    _base_dir: Path | None = None,
 ) -> list[dict]:
     """Find the most recent Claude Code session for cwd and return last n messages.
 
@@ -39,7 +38,9 @@ def read_recent_transcript(
     for project_dir in claude_home.iterdir():
         if not project_dir.is_dir():
             continue
-        for jsonl_file in sorted(project_dir.glob("*.jsonl"), key=lambda f: f.stat().st_mtime, reverse=True):
+        for jsonl_file in sorted(
+            project_dir.glob("*.jsonl"), key=lambda f: f.stat().st_mtime, reverse=True
+        ):
             try:
                 # Quick check: read first few lines for cwd
                 with jsonl_file.open() as f:

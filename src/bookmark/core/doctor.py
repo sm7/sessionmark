@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import shutil
-import sys
 from pathlib import Path
-from typing import Optional
 
 from bookmark.config import Config
 
 
-def run_doctor(config: Optional[Config] = None) -> None:
+def run_doctor(config: Config | None = None) -> None:
     """Run all health checks and print results."""
     if config is None:
         from bookmark.config import load_config
@@ -40,7 +38,6 @@ def run_doctor(config: Optional[Config] = None) -> None:
     db_path = home / "bookmarks.db"
     if db_path.exists():
         try:
-            import sqlite3
             from bookmark.storage.db import SCHEMA_VERSION, open_db
             conn = open_db(db_path)
             version = conn.execute("PRAGMA user_version").fetchone()[0]
@@ -53,7 +50,7 @@ def run_doctor(config: Optional[Config] = None) -> None:
         except Exception as exc:
             print(f"✗ SQLite DB           error: {exc}")
     else:
-        print(f"- SQLite DB           not found (will be created on first save)")
+        print("- SQLite DB           not found (will be created on first save)")
 
     # 3. Blob store
     blob_dir = home / "blobs"
@@ -74,14 +71,14 @@ def run_doctor(config: Optional[Config] = None) -> None:
             pass
 
     if mcp_installed:
-        print(f"✓ MCP server          bookmark-mcp installed")
+        print("✓ MCP server          bookmark-mcp installed")
     else:
-        print(f"- MCP server          bookmark-mcp not found in PATH")
+        print("- MCP server          bookmark-mcp not found in PATH")
 
     # 5. Configured briefing provider
     provider = config.briefing_provider
     if provider == "template":
-        print(f"- briefing provider   template (no LLM)")
+        print("- briefing provider   template (no LLM)")
     else:
         print(f"✓ briefing provider   {provider}")
 
@@ -90,7 +87,7 @@ def run_doctor(config: Optional[Config] = None) -> None:
     _check_agent_path("cursor", Path.home() / ".cursor" / "User" / "workspaceStorage")
     _check_agent_path("codex", Path.home() / ".codex" / "sessions")
     _check_agent_path("gemini", Path.home() / ".gemini" / "sessions")
-    print(f"  aider               per-repo only (.aider.chat.history.md)")
+    print("  aider               per-repo only (.aider.chat.history.md)")
 
     # 7. Sync status
     if config.sync_enabled:
@@ -99,9 +96,12 @@ def run_doctor(config: Optional[Config] = None) -> None:
             remote = config.git_remote or "(no remote configured)"
             print(f"✓ sync                enabled, sync dir initialized ({remote})")
         else:
-            print(f"! sync                enabled but sync dir not initialized — run 'bookmark sync init'")
+            print(
+                "! sync                enabled but sync dir not initialized"
+                " — run 'bookmark sync init'"
+            )
     else:
-        print(f"- sync                disabled")
+        print("- sync                disabled")
 
     print(_hline)
 

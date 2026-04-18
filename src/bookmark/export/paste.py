@@ -6,8 +6,6 @@ Uses Jinja2 templates from src/bookmark/export/templates/.
 
 from __future__ import annotations
 
-from typing import Optional
-
 VALID_TARGETS = {"generic", "claude", "cursor", "codex", "gemini", "aider"}
 
 

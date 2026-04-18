@@ -25,8 +25,7 @@ See design doc §17 for CLI design details.
 
 from __future__ import annotations
 
-import sys
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -50,13 +49,13 @@ err_console = Console(stderr=True, style="bold red")
 def save(
     name: Annotated[str, typer.Argument(help="Bookmark name (slug).")] = "wip",
     msg: Annotated[
-        Optional[str], typer.Option("-m", "--msg", help="One-line goal / description.")
+        str | None, typer.Option("-m", "--msg", help="One-line goal / description.")
     ] = None,
     tag: Annotated[
-        Optional[str], typer.Option("--tag", help="Comma-separated tags.")
+        str | None, typer.Option("--tag", help="Comma-separated tags.")
     ] = None,
     source: Annotated[
-        Optional[str],
+        str | None,
         typer.Option(
             "--source",
             help="Agent source: claude-code, cursor, codex, gemini, aider, terminal, generic.",
@@ -95,13 +94,13 @@ def save(
 @app.command(name="list")
 def list_cmd(
     repo: Annotated[
-        Optional[str], typer.Option("--repo", help="Filter by repo name.")
+        str | None, typer.Option("--repo", help="Filter by repo name.")
     ] = None,
     tag: Annotated[
-        Optional[str], typer.Option("--tag", help="Filter by tag.")
+        str | None, typer.Option("--tag", help="Filter by tag.")
     ] = None,
     source: Annotated[
-        Optional[str], typer.Option("--source", help="Filter by agent source.")
+        str | None, typer.Option("--source", help="Filter by agent source.")
     ] = None,
     n: Annotated[int, typer.Option("-n", help="Number of results.")] = 20,
     as_json: Annotated[
@@ -206,6 +205,7 @@ def doctor(
 ) -> None:
     """Run health checks on the bookmark installation."""
     from pathlib import Path
+
     from bookmark.config import load_config
     from bookmark.core.doctor import run_doctor
 
@@ -218,13 +218,16 @@ def doctor(
         from bookmark.redact import redact
 
         # cli.py lives at src/bookmark/cli.py → 3 parents up = project root
-        corpus_path = (Path(__file__).parent.parent.parent / "tests" / "fixtures" / "redaction_corpus" / "secrets.txt").resolve()
+        corpus_path = (
+            Path(__file__).parent.parent.parent
+            / "tests" / "fixtures" / "redaction_corpus" / "secrets.txt"
+        ).resolve()
 
         if not corpus_path.exists():
             print("FAIL: redaction corpus not found")
             raise typer.Exit(1)
 
-        lines = [l for l in corpus_path.read_text().splitlines() if l.strip()]
+        lines = [ln for ln in corpus_path.read_text().splitlines() if ln.strip()]
         failures: list[str] = []
         for line in lines:
             result = redact(line)
@@ -237,7 +240,7 @@ def doctor(
                 print(f)
             raise typer.Exit(1)
         else:
-            redacted_count = sum(1 for l in lines if redact(l) != l)
+            redacted_count = sum(1 for ln in lines if redact(ln) != ln)
             print(f"PASS: {redacted_count}/{len(lines)} lines redacted correctly")
 
 
@@ -304,14 +307,18 @@ def export(
         str, typer.Option("--target", help="Target agent for paste format.")
     ] = "generic",
     output: Annotated[
-        Optional[str], typer.Option("-o", "--output", help="Write to file.")
+        str | None, typer.Option("-o", "--output", help="Write to file.")
     ] = None,
 ) -> None:
     """Export a bookmark for sharing or cross-agent paste."""
     import json as _json
 
-    from bookmark.config import load_config
-    from bookmark.core.resume import _load_config_and_conn, _load_open_files, _load_transcript, _resolve_or_exit
+    from bookmark.core.resume import (
+        _load_config_and_conn,
+        _load_open_files,
+        _load_transcript,
+        _resolve_or_exit,
+    )
     from bookmark.storage.db import get_todos
 
     try:
@@ -355,7 +362,7 @@ def export(
 @app.command()
 def install(
     for_agent: Annotated[
-        Optional[str],
+        str | None,
         typer.Option("--for", help="Agent name or 'all'."),
     ] = None,
     list_agents: Annotated[
@@ -372,8 +379,9 @@ def install(
     ] = False,
 ) -> None:
     """Install bookmark skills for coding agents."""
-    from bookmark.install.installer import AGENTS, install_for_agent, install_for_all, list_installs
     from rich.console import Console
+
+    from bookmark.install.installer import install_for_agent, install_for_all, list_installs
 
     console = Console()
 
@@ -384,7 +392,8 @@ def install(
     if list_agents:
         listing = list_installs()
         for entry in listing:
-            status = "[green]installed[/green]" if entry["installed"] else "[dim]not installed[/dim]"
+            installed = entry["installed"]
+            status = "[green]installed[/green]" if installed else "[dim]not installed[/dim]"
             console.print(f"  {entry['agent']:<15} {status}  ({entry['dest']})")
         return
 
@@ -474,7 +483,9 @@ def config_set_cmd(
 @app.command()
 def diff(
     name1: Annotated[str, typer.Argument(help="First bookmark name.")],
-    name2: Annotated[Optional[str], typer.Argument(help="Second bookmark name (default: current state).")] = None,
+    name2: Annotated[
+        str | None, typer.Argument(help="Second bookmark name (default: current state).")
+    ] = None,
 ) -> None:
     """Show diff between two bookmarks or a bookmark and current state."""
     from bookmark.core.diff import diff_bookmarks

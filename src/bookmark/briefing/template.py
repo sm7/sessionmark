@@ -9,7 +9,6 @@ See design doc §10 for the full briefing format specification.
 from __future__ import annotations
 
 import time
-from typing import Optional
 
 from bookmark.core.models import Bookmark, FileEntry, TodoItem
 
@@ -26,10 +25,10 @@ def _relative_time(ts: int) -> str:
     return f"{diff // 86400}d ago"
 
 
-def _last_exchange(transcript: list[dict]) -> tuple[Optional[str], Optional[str]]:
+def _last_exchange(transcript: list[dict]) -> tuple[str | None, str | None]:
     """Extract the last user message and last assistant message from transcript."""
-    last_user: Optional[str] = None
-    last_assistant: Optional[str] = None
+    last_user: str | None = None
+    last_assistant: str | None = None
     for msg in transcript:
         role = msg.get("role", "")
         content = msg.get("content", "")
@@ -49,7 +48,7 @@ def _truncate(s: str, n: int) -> str:
     return s[:n - 1] + "…"
 
 
-def _next_step_heuristic(last_assistant: Optional[str], max_chars: int = 120) -> str:
+def _next_step_heuristic(last_assistant: str | None, max_chars: int = 120) -> str:
     """Extract a 'next step' hint from the last assistant message.
 
     Looks for the last imperative sentence (ends with '.' or '?').
@@ -79,7 +78,7 @@ def render_briefing(
     open_files: list[FileEntry],
     include_next_step: bool = True,
     full_transcript: bool = False,
-    llm_summary: Optional[str] = None,
+    llm_summary: str | None = None,
 ) -> str:
     """Render a briefing from stored fields. No LLM.
 

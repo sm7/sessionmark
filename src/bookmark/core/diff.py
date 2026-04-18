@@ -5,15 +5,13 @@ Compares two bookmarks and shows what changed: goal, files, todos, git state.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from bookmark.config import Config
 
 
 def diff_bookmarks(
     name1: str,
-    name2: Optional[str] = None,
-    config: Optional[Config] = None,
+    name2: str | None = None,
+    config: Config | None = None,
 ) -> None:
     """Compare two bookmarks, or one bookmark against current state.
 
@@ -26,10 +24,7 @@ def diff_bookmarks(
     config:
         Pre-loaded Config object (loads fresh if None).
     """
-    import json
-    import sys
 
-    import typer
     from rich.console import Console
 
     from bookmark.config import load_config
@@ -46,7 +41,7 @@ def diff_bookmarks(
     # Load first bookmark
     try:
         bm1 = _resolve_or_exit(conn, name1)
-    except SystemExit as exc:
+    except SystemExit:
         conn.close()
         raise
     except Exception as exc:

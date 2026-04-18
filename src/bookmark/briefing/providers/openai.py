@@ -12,8 +12,9 @@ class OpenAIProvider:
         self.base_url = base_url.rstrip("/")
 
     def generate(self, context: dict) -> str:
-        import httpx
         import os
+
+        import httpx
         api_key = os.environ.get("OPENAI_API_KEY", "")
         if not api_key:
             raise ValueError("OPENAI_API_KEY not set")

@@ -5,12 +5,11 @@ from __future__ import annotations
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Optional
 
 from bookmark.config import Config
 
 
-def _default_sync_dir(config: Optional[Config] = None) -> Path:
+def _default_sync_dir(config: Config | None = None) -> Path:
     """Return the default sync directory."""
     if config is not None:
         return config.home / "sync"
@@ -19,7 +18,7 @@ def _default_sync_dir(config: Optional[Config] = None) -> Path:
     return cfg.home / "sync"
 
 
-def _bookmark_home(config: Optional[Config] = None) -> Path:
+def _bookmark_home(config: Config | None = None) -> Path:
     """Return the bookmark home directory."""
     if config is not None:
         return config.home
@@ -27,7 +26,7 @@ def _bookmark_home(config: Optional[Config] = None) -> Path:
     return load_config().home
 
 
-def _run_git(args: list[str], cwd: Optional[Path] = None) -> None:
+def _run_git(args: list[str], cwd: Path | None = None) -> None:
     """Run a git command with check=True. Raises RuntimeError on failure."""
     cmd = ["git"] + args
     try:
@@ -44,8 +43,8 @@ def _run_git(args: list[str], cwd: Optional[Path] = None) -> None:
 
 def sync_init(
     git_remote: str,
-    sync_dir: Optional[Path] = None,
-    config: Optional[Config] = None,
+    sync_dir: Path | None = None,
+    config: Config | None = None,
 ) -> None:
     """Initialize a local git-backed sync repo.
 
@@ -84,9 +83,9 @@ def sync_init(
 
 
 def sync_push(
-    sync_dir: Optional[Path] = None,
+    sync_dir: Path | None = None,
     message: str = "bookmark sync",
-    config: Optional[Config] = None,
+    config: Config | None = None,
 ) -> None:
     """Copy bookmarks.db + blobs to sync dir, commit, push.
 
@@ -123,8 +122,8 @@ def sync_push(
 
 
 def sync_pull(
-    sync_dir: Optional[Path] = None,
-    config: Optional[Config] = None,
+    sync_dir: Path | None = None,
+    config: Config | None = None,
 ) -> None:
     """Pull from remote, merge bookmarks.db.
 
@@ -155,8 +154,8 @@ def sync_pull(
 
 def sync_clone(
     git_remote: str,
-    sync_dir: Optional[Path] = None,
-    config: Optional[Config] = None,
+    sync_dir: Path | None = None,
+    config: Config | None = None,
 ) -> None:
     """Clone a remote sync repo and import its bookmarks.db.
 

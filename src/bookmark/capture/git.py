@@ -15,12 +15,11 @@ See design doc §5 for capture pipeline overview.
 from __future__ import annotations
 
 import subprocess
-from typing import Optional
 
 from bookmark.core.models import FileEntry, GitInfo
 
 
-def _run(args: list[str], cwd: Optional[str] = None) -> str:
+def _run(args: list[str], cwd: str | None = None) -> str:
     """Run a git command and return stdout. Returns '' on any error."""
     try:
         result = subprocess.run(
@@ -37,7 +36,7 @@ def _run(args: list[str], cwd: Optional[str] = None) -> str:
     return ""
 
 
-def capture_git(cwd: Optional[str] = None) -> GitInfo:
+def capture_git(cwd: str | None = None) -> GitInfo:
     """Capture git context for the repo at *cwd* (default: process cwd).
 
     Returns a GitInfo with all available fields populated.

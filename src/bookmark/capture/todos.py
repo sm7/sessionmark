@@ -15,7 +15,6 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
-from typing import Optional
 
 from bookmark.core.models import TodoItem
 
@@ -105,8 +104,8 @@ def _scan_inline(root: str, recently_modified: list[str]) -> list[TodoItem]:
 
 
 def capture_todos(
-    cwd: Optional[str] = None,
-    recently_modified: Optional[list[str]] = None,
+    cwd: str | None = None,
+    recently_modified: list[str] | None = None,
 ) -> list[TodoItem]:
     """Capture TODO items from all sources for the workspace at *cwd*.
 

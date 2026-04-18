@@ -15,7 +15,6 @@ from __future__ import annotations
 import os
 import re
 from pathlib import Path
-from typing import Optional
 
 _ZSH_ENTRY = re.compile(r"^:\s*\d+:\d+;(.+)$")
 
@@ -48,10 +47,10 @@ def _read_bash(path: Path) -> list[str]:
     except OSError:
         return []
 
-    return [l.strip() for l in lines if l.strip()][-_N:]
+    return [line.strip() for line in lines if line.strip()][-_N:]
 
 
-def capture_shell_history(histfile: Optional[str] = None) -> list[str]:
+def capture_shell_history(histfile: str | None = None) -> list[str]:
     """Return the last *_N* shell commands from the history file.
 
     *histfile* overrides the auto-detected path (useful in tests).

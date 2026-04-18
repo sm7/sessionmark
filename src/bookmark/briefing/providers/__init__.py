@@ -9,7 +9,10 @@ def _build_prompt(context: dict) -> str:
     """Build a prompt string from bookmark context dict."""
     goal = context.get("goal") or "(no goal)"
     todos = context.get("todos", [])
-    pending = [t for t in todos if getattr(t, "status", t.get("status", "") if isinstance(t, dict) else "") == "pending"]
+    pending = [
+        t for t in todos
+        if getattr(t, "status", t.get("status", "") if isinstance(t, dict) else "") == "pending"
+    ]
     transcript = context.get("transcript", [])[-4:]
     files = context.get("open_files", [])
 
@@ -24,7 +27,7 @@ def _build_prompt(context: dict) -> str:
                 todo_texts.append(t.text)
             elif isinstance(t, dict):
                 todo_texts.append(t.get("text", ""))
-        parts.append(f"\nOPEN TODOS: " + "; ".join(todo_texts))
+        parts.append("\nOPEN TODOS: " + "; ".join(todo_texts))
     if transcript:
         last = transcript[-1]
         content = last.get("content", "")[:200] if isinstance(last, dict) else ""
@@ -37,7 +40,7 @@ def _build_prompt(context: dict) -> str:
                 file_paths.append(f.path)
             elif isinstance(f, dict):
                 file_paths.append(f.get("path", ""))
-        parts.append(f"\nOPEN FILES: " + ", ".join(file_paths))
+        parts.append("\nOPEN FILES: " + ", ".join(file_paths))
     parts.append("\nWrite 3-5 sentences only. No preamble.")
     return "\n".join(parts)
 

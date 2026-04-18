@@ -9,13 +9,15 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
 
-def _candidate_dirs(_base_dir: Optional[Path] = None) -> list[Path]:
+def _candidate_dirs(_base_dir: Path | None = None) -> list[Path]:
     home = _base_dir if _base_dir is not None else Path.home()
     xdg = os.environ.get("XDG_CONFIG_HOME", "")
-    xdg_path = Path(xdg).expanduser() / "gemini" / "sessions" if xdg else home / ".config" / "gemini" / "sessions"
+    if xdg:
+        xdg_path = Path(xdg).expanduser() / "gemini" / "sessions"
+    else:
+        xdg_path = home / ".config" / "gemini" / "sessions"
     return [
         home / ".gemini" / "sessions",
         home / ".config" / "gemini" / "sessions",
@@ -26,7 +28,7 @@ def _candidate_dirs(_base_dir: Optional[Path] = None) -> list[Path]:
 def read_recent_transcript(
     cwd: str,
     n_messages: int = 20,
-    _base_dir: Optional[Path] = None,
+    _base_dir: Path | None = None,
 ) -> list[dict]:
     for sessions_dir in _candidate_dirs(_base_dir):
         if not sessions_dir.exists():

@@ -14,8 +14,6 @@ from __future__ import annotations
 import os
 import subprocess
 import time
-from pathlib import Path
-from typing import Optional
 
 from bookmark.core.models import FileEntry
 
@@ -72,7 +70,7 @@ def _get_numstat(cwd: str) -> dict[str, tuple[int, int]]:
         return {}
 
 
-def capture_files(cwd: Optional[str] = None, max_age_seconds: int = _TWO_HOURS) -> list[FileEntry]:
+def capture_files(cwd: str | None = None, max_age_seconds: int = _TWO_HOURS) -> list[FileEntry]:
     """Return recently modified files under *cwd*.
 
     Files modified within *max_age_seconds* seconds ago are included.

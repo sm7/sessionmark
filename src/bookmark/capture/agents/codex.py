@@ -8,13 +8,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
 
 
 def read_recent_transcript(
     cwd: str,
     n_messages: int = 20,
-    _base_dir: Optional[Path] = None,
+    _base_dir: Path | None = None,
 ) -> list[dict]:
     """Find most recent Codex session and return last n messages.
 

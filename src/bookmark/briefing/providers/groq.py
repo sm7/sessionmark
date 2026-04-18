@@ -12,8 +12,9 @@ class GroqProvider:
         self.base_url = "https://api.groq.com/openai/v1"
 
     def generate(self, context: dict) -> str:
-        import httpx
         import os
+
+        import httpx
         api_key = os.environ.get("GROQ_API_KEY", "")
         if not api_key:
             raise ValueError("GROQ_API_KEY not set")

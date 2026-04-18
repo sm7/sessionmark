@@ -10,10 +10,8 @@ See design doc §7 for the full schema specification.
 
 from __future__ import annotations
 
-import json
 import sqlite3
 from pathlib import Path
-from typing import Optional
 
 from bookmark.core.models import Bookmark, EnvVar, TodoItem
 
@@ -100,7 +98,8 @@ def _migrate(conn: sqlite3.Connection) -> None:
             cols = {row[1] for row in conn.execute("PRAGMA table_info(bookmarks)").fetchall()}
             if "transcript_messages" not in cols:
                 conn.execute(
-                    "ALTER TABLE bookmarks ADD COLUMN transcript_messages INTEGER NOT NULL DEFAULT 0"
+                    "ALTER TABLE bookmarks"
+                    " ADD COLUMN transcript_messages INTEGER NOT NULL DEFAULT 0"
                 )
         conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
         conn.commit()
@@ -195,7 +194,7 @@ def _row_to_bookmark(row: sqlite3.Row) -> Bookmark:
     return Bookmark(**d)
 
 
-def get_bookmark_by_id(conn: sqlite3.Connection, bm_id: str) -> Optional[Bookmark]:
+def get_bookmark_by_id(conn: sqlite3.Connection, bm_id: str) -> Bookmark | None:
     """Fetch a single bookmark by exact ID."""
     row = conn.execute("SELECT * FROM bookmarks WHERE id = ?", (bm_id,)).fetchone()
     return _row_to_bookmark(row) if row else None
@@ -203,9 +202,9 @@ def get_bookmark_by_id(conn: sqlite3.Connection, bm_id: str) -> Optional[Bookmar
 
 def list_bookmarks(
     conn: sqlite3.Connection,
-    repo: Optional[str] = None,
-    tag: Optional[str] = None,
-    source: Optional[str] = None,
+    repo: str | None = None,
+    tag: str | None = None,
+    source: str | None = None,
     n: int = 20,
     include_auto: bool = False,
 ) -> list[Bookmark]:
@@ -239,7 +238,7 @@ def list_bookmarks(
     return [_row_to_bookmark(r) for r in rows]
 
 
-def resolve_name(conn: sqlite3.Connection, name: str) -> Optional[Bookmark]:
+def resolve_name(conn: sqlite3.Connection, name: str) -> Bookmark | None:
     """Resolve a name or prefix to a unique Bookmark.
 
     Resolution order:

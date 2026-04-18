@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Optional
 
 from bookmark.config import Config
 from bookmark.storage.db import open_db, search_bookmarks
@@ -28,7 +27,7 @@ def search_cmd(
     query: str,
     as_json: bool = False,
     limit: int = 10,
-    config: Optional[Config] = None,
+    config: Config | None = None,
 ) -> list:
     """Full-text search over bookmark names, goals, and tags.
 
