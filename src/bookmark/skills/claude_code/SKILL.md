@@ -1,5 +1,7 @@
 # Sessionmark
 
+Saves session context so work can be resumed on another machine or continued in a different agent (Cursor, JetBrains, Gemini, etc.).
+
 When the user says "save my progress", "I need to stop", "switching machines", "hand off to [agent]", or "bookmark this":
 Run: `sessionmark save --source claude-code --transcript-stdin -m "<one-line summary of current goal>"`
 Pipe the last 20 messages as JSON-lines to stdin:

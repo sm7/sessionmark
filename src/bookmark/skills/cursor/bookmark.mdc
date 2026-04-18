@@ -1,8 +1,10 @@
 ---
-description: Save and resume sessions
+description: Save and resume sessions across machines or agents
 globs: []
 alwaysApply: false
 ---
+Saves session context so work can be resumed on another machine or continued in a different agent (Claude Code, JetBrains, Gemini, etc.).
+
 When user says "save my progress", "I need to stop", "switching machines", "hand off to [agent]", or "bookmark this":
 Run: `sessionmark save --source cursor --transcript-stdin -m "<current goal>"`
 Pipe recent messages as JSON-lines to stdin.
