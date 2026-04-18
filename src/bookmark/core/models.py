@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import time
 import uuid
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -82,10 +81,10 @@ class FileEntry(BaseModel):
 class GitInfo(BaseModel):
     """Snapshot of the git repo state at bookmark time."""
 
-    branch: Optional[str] = None
-    head: Optional[str] = None
-    repo_root: Optional[str] = None
-    repo_name: Optional[str] = None
+    branch: str | None = None
+    head: str | None = None
+    repo_root: str | None = None
+    repo_name: str | None = None
     files_changed: int = 0
     insertions: int = 0
     deletions: int = 0
@@ -105,16 +104,16 @@ class Bookmark(BaseModel):
     slug: str
     created_at: int = Field(default_factory=lambda: int(time.time()))
     repo_root: str = ""
-    repo_name: Optional[str] = None
-    git_branch: Optional[str] = None
-    git_head: Optional[str] = None
-    goal: Optional[str] = None
-    tags: Optional[str] = None  # comma-separated
+    repo_name: str | None = None
+    git_branch: str | None = None
+    git_head: str | None = None
+    goal: str | None = None
+    tags: str | None = None  # comma-separated
     source: str = "terminal"
-    session_id: Optional[str] = None
-    transcript_blob: Optional[str] = None
-    diff_blob: Optional[str] = None
-    files_blob: Optional[str] = None
+    session_id: str | None = None
+    transcript_blob: str | None = None
+    diff_blob: str | None = None
+    files_blob: str | None = None
     auto: bool = False
     transcript_messages: int = 0  # count of messages stored (Week 2, §19)
     # In-memory only (not stored in bookmarks table directly)

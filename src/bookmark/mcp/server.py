@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Any, Optional
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
@@ -55,7 +54,9 @@ async def list_tools() -> list[Tool]:
                 "properties": {
                     "name": {"type": "string", "default": "wip", "description": "Bookmark name."},
                     "message": {"type": "string", "default": "", "description": "One-line goal."},
-                    "tags": {"type": "string", "default": "", "description": "Comma-separated tags."},
+                    "tags": {
+                        "type": "string", "default": "", "description": "Comma-separated tags."
+                    },
                 },
             },
         ),
@@ -65,7 +66,11 @@ async def list_tools() -> list[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "name": {"type": "string", "default": "latest", "description": "Bookmark name or 'latest'."},
+                    "name": {
+                        "type": "string",
+                        "default": "latest",
+                        "description": "Bookmark name or 'latest'.",
+                    },
                 },
             },
         ),
@@ -75,7 +80,9 @@ async def list_tools() -> list[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "repo": {"type": "string", "default": "", "description": "Filter by repo name."},
+                    "repo": {
+                        "type": "string", "default": "", "description": "Filter by repo name."
+                    },
                     "tag": {"type": "string", "default": "", "description": "Filter by tag."},
                     "limit": {"type": "integer", "default": 10, "description": "Max results."},
                 },
@@ -120,7 +127,7 @@ async def handle_call_tool(
         from bookmark.config import load_config
         config = load_config()
 
-    from bookmark.storage.db import open_db, list_bookmarks, resolve_name, get_todos
+    from bookmark.storage.db import get_todos, list_bookmarks, open_db, resolve_name
 
     db_path = config.home / "bookmarks.db"
     conn = open_db(db_path)
@@ -151,16 +158,18 @@ async def handle_call_tool(
             if bm_name == "latest":
                 rows = list_bookmarks(conn, n=1)
                 if not rows:
-                    return [TextContent(type="text", text=json.dumps({"error": "No bookmarks found."}))]
+                    err = json.dumps({"error": "No bookmarks found."})
+                    return [TextContent(type="text", text=err)]
                 bm = rows[0]
             else:
                 bm = resolve_name(conn, bm_name)
                 if bm is None:
-                    return [TextContent(type="text", text=json.dumps({"error": f"Bookmark '{bm_name}' not found."}))]
+                    err = json.dumps({"error": f"Bookmark '{bm_name}' not found."})
+                    return [TextContent(type="text", text=err)]
 
             todos = get_todos(conn, bm.id)
 
-            from bookmark.core.resume import _load_transcript, _load_open_files
+            from bookmark.core.resume import _load_open_files, _load_transcript
             transcript = _load_transcript(config, bm)
             open_files = _load_open_files(config, bm)
 
@@ -178,7 +187,10 @@ async def handle_call_tool(
                 "goal": bm.goal,
                 "open_files": [{"path": f.path, "status": f.status} for f in open_files],
                 "todos": [{"text": t.text, "status": t.status} for t in todos],
-                "next_step": f"cd {bm.repo_root}" + (f" && git checkout {bm.git_branch}" if bm.git_branch else ""),
+                "next_step": (
+                    f"cd {bm.repo_root}"
+                    + (f" && git checkout {bm.git_branch}" if bm.git_branch else "")
+                ),
                 "source": bm.source,
                 "saved_at": bm.created_at,
             }
@@ -200,12 +212,14 @@ async def handle_call_tool(
             if bm_name == "latest":
                 rows = list_bookmarks(conn, n=1)
                 if not rows:
-                    return [TextContent(type="text", text=json.dumps({"error": "No bookmarks found."}))]
+                    err = json.dumps({"error": "No bookmarks found."})
+                    return [TextContent(type="text", text=err)]
                 bm = rows[0]
             else:
                 bm = resolve_name(conn, bm_name)
                 if bm is None:
-                    return [TextContent(type="text", text=json.dumps({"error": f"Bookmark '{bm_name}' not found."}))]
+                    err = json.dumps({"error": f"Bookmark '{bm_name}' not found."})
+                    return [TextContent(type="text", text=err)]
 
             todos = get_todos(conn, bm.id)
             data = bm.model_dump()

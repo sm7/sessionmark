@@ -7,13 +7,13 @@ Name resolution follows design doc §8:
 from __future__ import annotations
 
 import sys
-from typing import Optional
 
 from bookmark.config import Config
-from bookmark.storage.db import delete_bookmark as _db_delete, open_db, resolve_name, list_bookmarks
+from bookmark.storage.db import delete_bookmark as _db_delete
+from bookmark.storage.db import list_bookmarks, open_db, resolve_name
 
 
-def delete_bookmark(name: str, force: bool = False, config: Optional[Config] = None) -> None:
+def delete_bookmark(name: str, force: bool = False, config: Config | None = None) -> None:
     """Delete a bookmark by name, with optional confirmation prompt.
 
     Parameters

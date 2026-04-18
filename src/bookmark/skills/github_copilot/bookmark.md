@@ -1,8 +1,8 @@
-# Bookmark skill for Gemini
+## Bookmark
 
 When the user says "bookmark this", "save session", or "I need to stop":
 
-Run: `sessionmark save --source gemini --transcript-stdin -m "<one-line goal>"`
+Run: `sessionmark save --source github-copilot --transcript-stdin -m "<one-line goal>"`
 Pipe recent conversation messages as JSON-lines to stdin.
 
 When the user says "resume", "load bookmark <name>", or "what was I working on":

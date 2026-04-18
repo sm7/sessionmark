@@ -20,12 +20,11 @@ import subprocess
 import sys
 import tomllib
 from pathlib import Path
-from typing import Optional
 
 from bookmark.core.models import EnvVar
 
 
-def _run_version(cmd: list[str]) -> Optional[str]:
+def _run_version(cmd: list[str]) -> str | None:
     """Run a command and return its trimmed stdout, or None on any failure."""
     try:
         result = subprocess.run(
@@ -38,7 +37,7 @@ def _run_version(cmd: list[str]) -> Optional[str]:
     return None
 
 
-def capture_env(cwd: Optional[str] = None) -> list[EnvVar]:
+def capture_env(cwd: str | None = None) -> list[EnvVar]:
     """Return a list of EnvVar items describing the current runtime environment."""
     root = Path(cwd or os.getcwd())
     items: list[EnvVar] = []

@@ -13,7 +13,6 @@ import os
 import re
 import tomllib
 from pathlib import Path
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -55,8 +54,8 @@ class Config(BaseModel):
     blob_compress: bool = True
 
     # Backward-compat aliases
-    llm_provider: Optional[str] = None
-    llm_model: Optional[str] = None
+    llm_provider: str | None = None
+    llm_model: str | None = None
 
 
 def _default_home() -> Path:
@@ -131,10 +130,16 @@ def load_config() -> Config:
         home=home,
         # general
         default_source=general.get("default_source", old.get("default_source", "terminal")),
-        max_transcript_messages=general.get("max_transcript_messages", old.get("max_transcript_messages", 20)),
-        recent_file_window_seconds=general.get("recent_file_window_seconds", old.get("recent_file_window_seconds", 7200)),
+        max_transcript_messages=general.get(
+            "max_transcript_messages", old.get("max_transcript_messages", 20)
+        ),
+        recent_file_window_seconds=general.get(
+            "recent_file_window_seconds", old.get("recent_file_window_seconds", 7200)
+        ),
         # capture
-        include_shell_history=capture.get("include_shell_history", old.get("include_shell_history", True)),
+        include_shell_history=capture.get(
+            "include_shell_history", old.get("include_shell_history", True)
+        ),
         include_env=capture.get("include_env", old.get("include_env", True)),
         include_git_diff=capture.get("include_git_diff", old.get("include_git_diff", True)),
         max_diff_bytes=capture.get("max_diff_bytes", old.get("max_diff_bytes", 262144)),
@@ -245,7 +250,7 @@ def config_set(key: str, value: str) -> None:
     from bookmark.redact import redact
     if redact(value) != value:
         raise ValueError(
-            f"Value looks like a credential — API keys must come from env vars, not config."
+            "Value looks like a credential — API keys must come from env vars, not config."
         )
 
     path = _config_path()

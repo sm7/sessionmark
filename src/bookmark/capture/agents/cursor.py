@@ -9,20 +9,17 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
 
 def read_recent_transcript(
     cwd: str,
     n_messages: int = 20,
-    _base_dir: Optional[Path] = None,
+    _base_dir: Path | None = None,
 ) -> list[dict]:
     """Best-effort read of most recent Cursor session for cwd."""
     if sys.platform == "darwin":
-        if _base_dir is not None:
-            storage = _base_dir / "Library" / "Application Support" / "Cursor" / "User" / "workspaceStorage"
-        else:
-            storage = Path.home() / "Library" / "Application Support" / "Cursor" / "User" / "workspaceStorage"
+        base = _base_dir if _base_dir is not None else Path.home()
+        storage = base / "Library" / "Application Support" / "Cursor" / "User" / "workspaceStorage"
     elif sys.platform == "win32":
         if _base_dir is not None:
             storage = _base_dir / "Cursor" / "User" / "workspaceStorage"
@@ -51,7 +48,9 @@ def read_recent_transcript(
             conn = sqlite3.connect(str(db_path))
             # Cursor stores chat in ItemTable key-value store
             rows = conn.execute(
-                "SELECT value FROM ItemTable WHERE key LIKE '%aiService.prompts%' OR key LIKE '%chat%history%' LIMIT 5"
+                "SELECT value FROM ItemTable"
+                " WHERE key LIKE '%aiService.prompts%' OR key LIKE '%chat%history%'"
+                " LIMIT 5"
             ).fetchall()
             conn.close()
             for (val,) in rows:

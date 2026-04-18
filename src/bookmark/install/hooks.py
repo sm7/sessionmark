@@ -9,37 +9,28 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
+_CMD_PRE_COMPACT = "sessionmark save --auto --tag pre-compact --quiet --source claude-code"
+_CMD_SESSION_END = "sessionmark save --auto --tag session-end --quiet --source claude-code"
 
 _HOOK_ENTRIES = {
     "PreCompact": [
         {
             "matcher": "",
-            "hooks": [
-                {
-                    "type": "command",
-                    "command": "bookmark save --auto --tag pre-compact --quiet --source claude-code",
-                }
-            ],
+            "hooks": [{"type": "command", "command": _CMD_PRE_COMPACT}],
         }
     ],
     "SessionEnd": [
         {
             "matcher": "",
-            "hooks": [
-                {
-                    "type": "command",
-                    "command": "bookmark save --auto --tag session-end --quiet --source claude-code",
-                }
-            ],
+            "hooks": [{"type": "command", "command": _CMD_SESSION_END}],
         }
     ],
 }
 
 
 def install_hooks(
-    cwd: Optional[str] = None,
+    cwd: str | None = None,
     dry_run: bool = False,
     global_scope: bool = False,
 ) -> dict:

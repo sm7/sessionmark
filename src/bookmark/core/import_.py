@@ -1,15 +1,14 @@
-"""Import bookmarks from an exported JSON file — bookmark import FILE."""
+"""Import bookmarks from an exported JSON file — sessionmark import FILE."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
 
 from bookmark.config import Config
 
 
-def import_bookmarks(file_path: str, config: Optional[Config] = None) -> int:
+def import_bookmarks(file_path: str, config: Config | None = None) -> int:
     """Import bookmarks from a JSON file. Returns count imported.
 
     The JSON file should contain either:
@@ -38,7 +37,7 @@ def import_bookmarks(file_path: str, config: Optional[Config] = None) -> int:
         raise ValueError(f"Expected a JSON object or array, got {type(data).__name__}")
 
     from bookmark.core.models import Bookmark, TodoItem
-    from bookmark.storage.db import open_db, insert_bookmark
+    from bookmark.storage.db import insert_bookmark, open_db
 
     db_path = config.home / "bookmarks.db"
     conn = open_db(db_path)
@@ -46,12 +45,12 @@ def import_bookmarks(file_path: str, config: Optional[Config] = None) -> int:
     imported = 0
     for record in records:
         if not isinstance(record, dict):
-            print(f"skipped: invalid record (not a dict)")
+            print("skipped: invalid record (not a dict)")
             continue
 
         slug = record.get("slug") or record.get("name", "")
         if not slug:
-            print(f"skipped: record has no slug or name")
+            print("skipped: record has no slug or name")
             continue
 
         # Check if slug already exists

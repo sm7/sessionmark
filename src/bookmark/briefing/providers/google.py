@@ -11,8 +11,9 @@ class GoogleProvider:
         self.model = model
 
     def generate(self, context: dict) -> str:
-        import httpx
         import os
+
+        import httpx
         api_key = os.environ.get("GEMINI_API_KEY", "")
         if not api_key:
             raise ValueError("GEMINI_API_KEY not set")

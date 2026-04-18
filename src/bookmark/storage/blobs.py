@@ -15,7 +15,6 @@ from __future__ import annotations
 import gzip
 import hashlib
 from pathlib import Path
-from typing import Optional
 
 
 class BlobStore:
@@ -57,7 +56,7 @@ class BlobStore:
 
         return key
 
-    def read(self, key: str) -> Optional[str]:
+    def read(self, key: str) -> str | None:
         """Read a blob by its SHA-256 hex key.
 
         Returns None if the blob does not exist.

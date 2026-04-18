@@ -18,8 +18,6 @@ import os
 import re
 import sys
 import time
-from pathlib import Path
-from typing import Optional
 
 from bookmark.capture.env import capture_env
 from bookmark.capture.files import capture_files
@@ -87,7 +85,10 @@ def _extract_todos_from_transcript(messages: list[dict]) -> list[TodoItem]:
                     text = m.group(1).strip()
                     if text:
                         # Determine status from [x] pattern
-                        status = "done" if re.match(r"\[x\]", line.strip(), re.IGNORECASE) else "pending"
+                        status = (
+                            "done" if re.match(r"\[x\]", line.strip(), re.IGNORECASE)
+                            else "pending"
+                        )
                         todos.append(TodoItem(text=text, origin="agent", status=status))
                     break
     return todos
@@ -103,7 +104,7 @@ def _read_transcript_from_stdin() -> list[dict]:
         try:
             msg = json.loads(line)
         except json.JSONDecodeError:
-            print(f"[bookmark] warning: skipping malformed transcript line", file=sys.stderr)
+            print("[bookmark] warning: skipping malformed transcript line", file=sys.stderr)
             continue
         if not isinstance(msg, dict):
             continue
@@ -145,12 +146,12 @@ def _write_transcript_blob(
 
 def save_bookmark(
     name: str,
-    goal: Optional[str] = None,
-    tags: Optional[str] = None,
-    source: Optional[str] = None,
+    goal: str | None = None,
+    tags: str | None = None,
+    source: str | None = None,
     transcript_stdin: bool = False,
-    cwd: Optional[str] = None,
-    config: Optional[Config] = None,
+    cwd: str | None = None,
+    config: Config | None = None,
     auto: bool = False,
 ) -> Bookmark:
     """Run the full save pipeline and return the saved Bookmark.
@@ -201,7 +202,7 @@ def save_bookmark(
     # ------------------------------------------------------------------
     # 2. Transcript (optional) — §19 Week 2
     # ------------------------------------------------------------------
-    transcript_blob_key: Optional[str] = None
+    transcript_blob_key: str | None = None
     n_msgs = 0
     transcript_todos: list[TodoItem] = []
 
@@ -247,7 +248,7 @@ def save_bookmark(
     # 3. Files blob
     # ------------------------------------------------------------------
     blobs = BlobStore(config.home, compress=config.blob_compress)
-    files_blob_key: Optional[str] = None
+    files_blob_key: str | None = None
     if file_entries:
         raw_files = json.dumps(
             [e.model_dump() for e in file_entries], indent=2
@@ -258,7 +259,7 @@ def save_bookmark(
     # ------------------------------------------------------------------
     # 4. Diff blob
     # ------------------------------------------------------------------
-    diff_blob_key: Optional[str] = None
+    diff_blob_key: str | None = None
     if git_info.modified_files:
         raw_diff = json.dumps(
             [f.model_dump() for f in git_info.modified_files], indent=2

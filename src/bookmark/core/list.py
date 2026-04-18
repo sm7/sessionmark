@@ -12,8 +12,6 @@ from __future__ import annotations
 
 import json
 import time
-from pathlib import Path
-from typing import Optional
 
 from rich.console import Console
 from rich.table import Table
@@ -35,20 +33,20 @@ def _relative_time(ts: int) -> str:
     return f"{diff // 86400}d ago"
 
 
-def _truncate(s: Optional[str], n: int = 40) -> str:
+def _truncate(s: str | None, n: int = 40) -> str:
     if not s:
         return ""
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
 def list_cmd(
-    repo: Optional[str] = None,
-    tag: Optional[str] = None,
-    source: Optional[str] = None,
+    repo: str | None = None,
+    tag: str | None = None,
+    source: str | None = None,
     n: int = 20,
     as_json: bool = False,
     include_auto: bool = False,
-    config: Optional[Config] = None,
+    config: Config | None = None,
 ) -> list[Bookmark]:
     """Query bookmarks and print them (table or JSON).
 

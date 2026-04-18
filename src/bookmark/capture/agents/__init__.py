@@ -4,8 +4,6 @@ See design doc §5, §11.7 for the agent capture overview.
 """
 from __future__ import annotations
 
-from typing import Optional
-
 
 def get_agent_reader(source: str):
     """Return an agent reader for the given source, or None.
@@ -51,6 +49,24 @@ def get_agent_reader(source: str):
 
     elif source == "aider":
         from .aider import read_recent_transcript as _fn
+
+        class _Reader:  # type: ignore[no-redef]
+            def read_recent_transcript(self, cwd: str, n: int = 20) -> list[dict]:
+                return _fn(cwd, n)
+
+        return _Reader()
+
+    elif source == "github-copilot":
+        from .github_copilot import read_recent_transcript as _fn
+
+        class _Reader:  # type: ignore[no-redef]
+            def read_recent_transcript(self, cwd: str, n: int = 20) -> list[dict]:
+                return _fn(cwd, n)
+
+        return _Reader()
+
+    elif source == "jetbrains":
+        from .jetbrains import read_recent_transcript as _fn
 
         class _Reader:  # type: ignore[no-redef]
             def read_recent_transcript(self, cwd: str, n: int = 20) -> list[dict]:
