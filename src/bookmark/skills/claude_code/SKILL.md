@@ -1,12 +1,11 @@
-# Bookmark skill
+# Sessionmark
 
-When the user says "bookmark this", "save session", "I need to stop", or similar:
-
+When the user says "save my progress", "I need to stop", "switching machines", "hand off to [agent]", or "bookmark this":
 Run: `sessionmark save --source claude-code --transcript-stdin -m "<one-line summary of current goal>"`
-Pipe the last 20 messages of the conversation as JSON-lines to stdin, format:
+Pipe the last 20 messages as JSON-lines to stdin:
 {"role": "user", "content": "...", "timestamp": "..."}
 {"role": "assistant", "content": "...", "timestamp": "..."}
 
-When the user says "resume", "what was I working on", or "load bookmark <name>":
+When the user says "resume", "pick up where I left off", "what was I working on", or "load session [name]":
 Run: `sessionmark resume [name or latest]`
 Show the output to the user.
