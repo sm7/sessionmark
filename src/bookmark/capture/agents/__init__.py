@@ -58,4 +58,13 @@ def get_agent_reader(source: str):
 
         return _Reader()
 
+    elif source == "github-copilot":
+        from .github_copilot import read_recent_transcript as _fn
+
+        class _Reader:  # type: ignore[no-redef]
+            def read_recent_transcript(self, cwd: str, n: int = 20) -> list[dict]:
+                return _fn(cwd, n)
+
+        return _Reader()
+
     return None

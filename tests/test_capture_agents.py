@@ -98,7 +98,7 @@ def test_aider_reader_n_messages_limit(tmp_path):
 
 def test_get_agent_reader_returns_correct_type():
     from bookmark.capture.agents import get_agent_reader
-    for source in ["claude-code", "cursor", "codex", "gemini", "aider"]:
+    for source in ["claude-code", "cursor", "codex", "gemini", "aider", "github-copilot"]:
         reader = get_agent_reader(source)
         assert reader is not None, f"Expected reader for {source}"
         assert hasattr(reader, "read_recent_transcript"), f"Missing method for {source}"
@@ -152,3 +152,58 @@ def test_gemini_reader_finds_session(tmp_path):
     result = read_recent_transcript(str(tmp_path), _base_dir=tmp_path)
     assert len(result) == 2
     assert result[0]["role"] == "user"
+
+
+def test_github_copilot_reader_empty_when_no_storage(tmp_path):
+    from bookmark.capture.agents.github_copilot import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path), _base_dir=tmp_path)
+    assert result == []
+
+
+def test_github_copilot_reader_finds_session(tmp_path):
+    """Copilot reader finds messages from VS Code workspaceStorage SQLite."""
+    import sqlite3
+
+    storage = tmp_path / ".config" / "Code" / "User" / "workspaceStorage" / "abc123"
+    storage.mkdir(parents=True)
+    db_path = storage / "state.vscdb"
+
+    messages = [
+        {"role": "user", "content": "how do I reverse a list?"},
+        {"role": "assistant", "content": "Use list[::-1] or list.reverse()."},
+    ]
+    conn = sqlite3.connect(str(db_path))
+    conn.execute("CREATE TABLE ItemTable (key TEXT, value TEXT)")
+    conn.execute(
+        "INSERT INTO ItemTable VALUES (?, ?)",
+        ("github.copilot-chat.history", json.dumps(messages)),
+    )
+    conn.commit()
+    conn.close()
+
+    from bookmark.capture.agents.github_copilot import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path), _base_dir=tmp_path)
+    assert len(result) == 2
+    assert result[0]["role"] == "user"
+    assert "reverse" in result[0]["content"]
+    assert result[1]["role"] == "assistant"
+
+
+def test_github_copilot_reader_n_messages_limit(tmp_path):
+    """n_messages parameter limits returned messages."""
+    import sqlite3
+
+    storage = tmp_path / ".config" / "Code" / "User" / "workspaceStorage" / "def456"
+    storage.mkdir(parents=True)
+    db_path = storage / "state.vscdb"
+
+    messages = [{"role": "user" if i % 2 == 0 else "assistant", "content": f"msg {i}"} for i in range(10)]
+    conn = sqlite3.connect(str(db_path))
+    conn.execute("CREATE TABLE ItemTable (key TEXT, value TEXT)")
+    conn.execute("INSERT INTO ItemTable VALUES (?, ?)", ("github.copilot-chat.history", json.dumps(messages)))
+    conn.commit()
+    conn.close()
+
+    from bookmark.capture.agents.github_copilot import read_recent_transcript
+    result = read_recent_transcript(str(tmp_path), n_messages=4, _base_dir=tmp_path)
+    assert len(result) == 4

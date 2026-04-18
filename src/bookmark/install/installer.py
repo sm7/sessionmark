@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Optional
 
 # Agents supported
-AGENTS = ["claude-code", "cursor", "codex", "gemini", "aider"]
+AGENTS = ["claude-code", "cursor", "codex", "gemini", "aider", "github-copilot"]
 
 # Map agent -> (relative destination path, source skill file relative to package skills/)
 _AGENT_CONFIG = {
@@ -42,6 +42,12 @@ _AGENT_CONFIG = {
     "aider": {
         "dest": "CONVENTIONS.md",
         "source": "aider/CONVENTIONS.md",
+        "append": True,
+        "append_marker": "## Bookmark",
+    },
+    "github-copilot": {
+        "dest": ".github/copilot-instructions.md",
+        "source": "github_copilot/bookmark.md",
         "append": True,
         "append_marker": "## Bookmark",
     },
