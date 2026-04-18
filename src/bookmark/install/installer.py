@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Optional
 
 # Agents supported
 AGENTS = ["claude-code", "cursor", "codex", "gemini", "aider", "github-copilot"]
@@ -68,12 +67,13 @@ def _read_source(agent: str) -> str:
 
 def install_for_agent(
     agent: str,
-    cwd: Optional[str] = None,
+    cwd: str | None = None,
     dry_run: bool = False,
 ) -> dict:
     """Install skill file for the given agent.
 
-    Returns {"agent": ..., "dest": ..., "action": "installed"|"already_installed"|"skipped"|"dry_run"}
+    Returns dict with keys agent, dest, action.
+    Action is one of: "installed", "already_installed", "skipped", "dry_run".
     Idempotent: if file already exists with same content, returns "already_installed".
     """
     if agent not in _AGENT_CONFIG:
@@ -118,7 +118,7 @@ def install_for_agent(
 
 
 def install_for_all(
-    cwd: Optional[str] = None,
+    cwd: str | None = None,
     dry_run: bool = False,
 ) -> list[dict]:
     """Install skill files for all supported agents.
@@ -135,7 +135,7 @@ def install_for_all(
     return results
 
 
-def list_installs(cwd: Optional[str] = None) -> list[dict]:
+def list_installs(cwd: str | None = None) -> list[dict]:
     """Show which agents have skills installed.
 
     Returns a list of dicts: {"agent": ..., "dest": ..., "installed": bool}

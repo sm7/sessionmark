@@ -4,8 +4,6 @@ See design doc §5, §11.7 for the agent capture overview.
 """
 from __future__ import annotations
 
-from typing import Optional
-
 
 def get_agent_reader(source: str):
     """Return an agent reader for the given source, or None.

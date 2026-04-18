@@ -11,10 +11,9 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
 
-def _storage_root(_base_dir: Optional[Path] = None) -> Path:
+def _storage_root(_base_dir: Path | None = None) -> Path:
     home = _base_dir if _base_dir is not None else Path.home()
     if sys.platform == "darwin":
         return home / "Library" / "Application Support" / "Code" / "User" / "workspaceStorage"
@@ -27,7 +26,7 @@ def _storage_root(_base_dir: Optional[Path] = None) -> Path:
 def read_recent_transcript(
     cwd: str,
     n_messages: int = 20,
-    _base_dir: Optional[Path] = None,
+    _base_dir: Path | None = None,
 ) -> list[dict]:
     """Best-effort read of most recent GitHub Copilot Chat session for cwd."""
     storage = _storage_root(_base_dir)
@@ -76,7 +75,12 @@ def read_recent_transcript(
 
 def _extract_messages(data: object, n: int) -> list[dict]:
     messages: list[dict] = []
-    items = data if isinstance(data, list) else (data.get("conversations") or data.get("history") or [] if isinstance(data, dict) else [])
+    if isinstance(data, list):
+        items = data
+    elif isinstance(data, dict):
+        items = data.get("conversations") or data.get("history") or []
+    else:
+        items = []
     for item in items:
         if not isinstance(item, dict):
             continue

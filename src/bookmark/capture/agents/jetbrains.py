@@ -21,7 +21,6 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Optional
 
 # Filenames the Copilot plugin may use for its persisted state.
 _COPILOT_XML_NAMES = [
@@ -32,7 +31,7 @@ _COPILOT_XML_NAMES = [
 ]
 
 
-def _jetbrains_root(_base_dir: Optional[Path] = None) -> Path:
+def _jetbrains_root(_base_dir: Path | None = None) -> Path:
     home = _base_dir if _base_dir is not None else Path.home()
     if sys.platform == "darwin":
         return home / "Library" / "Application Support" / "JetBrains"
@@ -129,7 +128,7 @@ def _extract_messages(data: object, n: int) -> list[dict]:
 def read_recent_transcript(
     cwd: str,
     n_messages: int = 20,
-    _base_dir: Optional[Path] = None,
+    _base_dir: Path | None = None,
 ) -> list[dict]:
     """Best-effort read of most recent JetBrains Copilot Chat session."""
     root = _jetbrains_root(_base_dir)
