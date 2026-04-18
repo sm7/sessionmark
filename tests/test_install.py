@@ -37,7 +37,7 @@ def test_install_codex(tmp_path):
 def test_install_all(tmp_path):
     from bookmark.install.installer import install_for_all
     results = install_for_all(cwd=str(tmp_path))
-    assert len(results) == 5  # all 5 agents
+    assert len(results) == 6  # all 6 agents
     actions = [r["action"] for r in results]
     assert all(a in ("installed", "skipped") for a in actions)
 
