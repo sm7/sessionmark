@@ -1,10 +1,10 @@
-# /bookmark
+# /sessionmark
 
-Save or resume a bookmark session.
+Save or resume a session.
 
 Usage:
-  /bookmark save [name] [-m "goal"]   — save current session
-  /bookmark resume [name|latest]      — resume a saved session
+  /sessionmark save [name] [-m "goal"]   — save current session
+  /sessionmark resume [name|latest]      — resume a saved session
 
 Codex invocation:
-  bookmark save --source codex --transcript-stdin -m "<goal>"
+  sessionmark save --source codex --transcript-stdin -m "<goal>"

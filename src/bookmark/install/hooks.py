@@ -10,8 +10,8 @@ import json
 import os
 from pathlib import Path
 
-_CMD_PRE_COMPACT = "bookmark save --auto --tag pre-compact --quiet --source claude-code"
-_CMD_SESSION_END = "bookmark save --auto --tag session-end --quiet --source claude-code"
+_CMD_PRE_COMPACT = "sessionmark save --auto --tag pre-compact --quiet --source claude-code"
+_CMD_SESSION_END = "sessionmark save --auto --tag session-end --quiet --source claude-code"
 
 _HOOK_ENTRIES = {
     "PreCompact": [

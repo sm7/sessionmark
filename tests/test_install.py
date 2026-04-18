@@ -9,7 +9,7 @@ def test_install_claude_code(tmp_path):
     dest = tmp_path / ".claude" / "skills" / "bookmark" / "SKILL.md"
     assert dest.exists()
     content = dest.read_text()
-    assert "bookmark save" in content
+    assert "sessionmark save" in content
 
 
 def test_install_idempotent(tmp_path):

@@ -1,4 +1,4 @@
-"""Doctor health check orchestration — bookmark doctor command."""
+"""Doctor health check orchestration — sessionmark doctor command."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ def run_doctor(config: Config | None = None) -> None:
     # Use print() so capsys can capture it
     _hline = "─" * 44
 
-    print("bookmark doctor")
+    print("sessionmark doctor")
     print(_hline)
 
     # 1. Bookmark home exists and is writable
@@ -98,7 +98,7 @@ def run_doctor(config: Config | None = None) -> None:
         else:
             print(
                 "! sync                enabled but sync dir not initialized"
-                " — run 'bookmark sync init'"
+                " — run 'sessionmark sync init'"
             )
     else:
         print("- sync                disabled")

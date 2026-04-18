@@ -1,4 +1,4 @@
-"""Diff tests — bookmark diff NAME1 NAME2."""
+"""Diff tests — sessionmark diff NAME1 NAME2."""
 
 from __future__ import annotations
 

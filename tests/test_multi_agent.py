@@ -24,11 +24,11 @@ def _make_config(home: Path) -> Config:
 
 def test_multi_agent_unified_storage(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """
-    Given three bookmark saves with different --source values:
-    1. bookmark list returns exactly 3 rows with correct sources
-    2. bookmark list --source cursor returns exactly 1 row
+    Given three sessionmark saves with different --source values:
+    1. sessionmark list returns exactly 3 rows with correct sources
+    2. sessionmark list --source cursor returns exactly 1 row
     3. SQLite has exactly 1 bookmarks table with 3 rows
-    4. bookmark show <name> renders same structure for all 3
+    4. sessionmark show <name> renders same structure for all 3
     """
     monkeypatch.setenv("BOOKMARK_HOME", str(tmp_path))
     config = _make_config(tmp_path)

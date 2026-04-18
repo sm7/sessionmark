@@ -1,6 +1,6 @@
 """Gemini CLI fallback session reader — §11.7 of design doc.
 
-Session location TBD — surfaced in `bookmark doctor` as per §17.
+Session location TBD — surfaced in `sessionmark doctor` as per §17.
 This implementation searches common locations.
 """
 

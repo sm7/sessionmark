@@ -1,4 +1,4 @@
-"""Import bookmarks from an exported JSON file — bookmark import FILE."""
+"""Import bookmarks from an exported JSON file — sessionmark import FILE."""
 
 from __future__ import annotations
 

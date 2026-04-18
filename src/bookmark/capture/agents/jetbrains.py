@@ -11,7 +11,7 @@ picking the most recently modified one.
 
 Note: the skill/instructions file (.github/copilot-instructions.md) is shared
 with the github-copilot installer entry — install via:
-  bookmark install --for github-copilot
+  sessionmark install --for github-copilot
 """
 
 from __future__ import annotations

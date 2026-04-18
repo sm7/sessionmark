@@ -1,17 +1,17 @@
-"""CLI entry point for bookmark-cli.
+"""CLI entry point for sessionmark.
 
-Defines the `bookmark` (and `bm`) command with subcommands:
-  bookmark save [NAME] [-m MSG] [--tag TAG] [--source AGENT] [--transcript-stdin]
-  bookmark list [--repo REPO] [--tag TAG] [--source AGENT] [-n N] [--json]
-  bookmark resume [NAME|latest] [--apply] [--json]
-  bookmark show [NAME|latest] [--full] [--no-transcript] [--json]
-  bookmark search QUERY [-n N] [--json]
-  bookmark delete NAME [-f]
-  bookmark export [NAME] [--format paste|md|json] [--target AGENT] [-o FILE]
-  bookmark install [--for AGENT|all] [--list] [--hooks] [--dry-run]
-  bookmark config get|set KEY [VALUE]
-  bookmark diff [NAME]
-  bookmark doctor [--check-redaction]
+Defines the `sessionmark` (and `sm`) command with subcommands:
+  sessionmark save [NAME] [-m MSG] [--tag TAG] [--source AGENT] [--transcript-stdin]
+  sessionmark list [--repo REPO] [--tag TAG] [--source AGENT] [-n N] [--json]
+  sessionmark resume [NAME|latest] [--apply] [--json]
+  sessionmark show [NAME|latest] [--full] [--no-transcript] [--json]
+  sessionmark search QUERY [-n N] [--json]
+  sessionmark delete NAME [-f]
+  sessionmark export [NAME] [--format paste|md|json] [--target AGENT] [-o FILE]
+  sessionmark install [--for AGENT|all] [--list] [--hooks] [--dry-run]
+  sessionmark config get|set KEY [VALUE]
+  sessionmark diff [NAME]
+  sessionmark doctor [--check-redaction]
 
 Exit codes (per design doc §16):
   0 — success

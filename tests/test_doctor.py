@@ -8,7 +8,7 @@ import pytest
 
 
 def test_doctor_runs_without_error(tmp_path, monkeypatch, capsys):
-    """bookmark doctor runs all checks without crashing."""
+    """sessionmark doctor runs all checks without crashing."""
     monkeypatch.setenv("BOOKMARK_HOME", str(tmp_path))
     from bookmark.config import load_config
 
