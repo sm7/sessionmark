@@ -36,7 +36,7 @@ NEXT STEP
   cd ~/code/transformerhttp && git checkout exp/focal-gamma
 ```
 
-Local-first. No cloud. No auth. Works with Claude Code, Cursor, Codex CLI, Gemini CLI, Aider — and any MCP client.
+Local-first. No cloud. No auth. Works with Claude Code, Cursor, Codex CLI, Gemini CLI, Aider, GitHub Copilot, and JetBrains — and any MCP client.
 
 > **Cross-agent fidelity caveat:** sessionmark recovers the thread of thought, not live runtime state. Goal, files, TODOs, and recent exchange carry over. Open DB connections, running dev servers, and the original agent's native tool reasoning do not.
 
@@ -139,8 +139,8 @@ This drops `.claude/skills/sessionmark/SKILL.md` into your current directory. Cl
 
 | You say | Claude Code runs |
 |---|---|
-| "sessionmark this" / "save session" / "I need to stop" | `sessionmark save --source claude-code --transcript-stdin -m "<goal>"` piping recent messages |
-| "resume" / "what was I working on" / "load sessionmark auth-fix" | `sessionmark resume [name or latest]` |
+| "save my progress" / "switching machines" / "hand off to Cursor" / "I need to stop" | `sessionmark save --source claude-code --transcript-stdin -m "<goal>"` piping recent messages |
+| "resume" / "pick up where I left off" / "load session auth-fix" | `sessionmark resume [name or latest]` |
 
 **Install for every agent at once:**
 
@@ -148,7 +148,7 @@ This drops `.claude/skills/sessionmark/SKILL.md` into your current directory. Cl
 sessionmark install --for all
 ```
 
-This drops skill/command files for Claude Code, Cursor, Codex CLI, Gemini CLI, and Aider in one shot. Re-running is a no-op if the files are already current.
+This drops skill/command files for Claude Code, Cursor, Codex CLI, Gemini CLI, Aider, and GitHub Copilot in one shot. Re-running is a no-op if the files are already current.
 
 **Install locations per agent:**
 
@@ -159,6 +159,7 @@ This drops skill/command files for Claude Code, Cursor, Codex CLI, Gemini CLI, a
 | Codex CLI | `.codex/commands/sessionmark.md` |
 | Gemini CLI | `.gemini/commands/sessionmark.md` |
 | Aider | `CONVENTIONS.md` (sessionmark section appended) |
+| GitHub Copilot (VS Code + JetBrains) | `.github/copilot-instructions.md` (appended) |
 
 **Dry-run to preview:**
 
@@ -179,16 +180,15 @@ Adds `PreCompact` and `SessionEnd` entries to `.claude/settings.json`. These run
 For Claude Code, create `.claude/skills/sessionmark/SKILL.md`:
 
 ```markdown
-# sessionmark skill
+# Sessionmark
 
-When the user says "sessionmark this", "save session", "I need to stop", or similar:
-
+When the user says "save my progress", "I need to stop", "switching machines", "hand off to [agent]", or "bookmark this":
 Run: `sessionmark save --source claude-code --transcript-stdin -m "<one-line summary of current goal>"`
 Pipe the last 20 messages of the conversation as JSON-lines to stdin:
 {"role": "user", "content": "...", "timestamp": "..."}
 {"role": "assistant", "content": "...", "timestamp": "..."}
 
-When the user says "resume", "what was I working on", or "load sessionmark <name>":
+When the user says "resume", "pick up where I left off", "what was I working on", or "load session <name>":
 Run: `sessionmark resume [name or latest]`
 Show the output to the user.
 ```
@@ -302,6 +302,8 @@ Filter by capturing agent:
 sessionmark list --source claude-code
 sessionmark list --source cursor
 sessionmark list --source codex
+sessionmark list --source github-copilot
+sessionmark list --source jetbrains
 ```
 
 ---
