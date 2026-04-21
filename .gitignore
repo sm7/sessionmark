@@ -13,3 +13,4 @@ venv/
 *.db-wal
 .env
 .env.*
+scripts/
