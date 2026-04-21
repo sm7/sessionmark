@@ -4,10 +4,6 @@ from __future__ import annotations
 
 import json
 import re
-from pathlib import Path
-
-import pytest
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -74,7 +70,7 @@ def _decode_section(block: str) -> dict[str, str]:
 
 
 def test_install_section_new_file(tmp_path):
-    from bookmark.install.context_writer import SECTION_RE, SCHEMA_LINE, install_section
+    from bookmark.install.context_writer import SCHEMA_LINE, SECTION_RE, install_section
 
     cfg = tmp_path / "CLAUDE.md"
     result = install_section(cfg)
@@ -86,7 +82,7 @@ def test_install_section_new_file(tmp_path):
 
 
 def test_install_section_existing_file_no_section(tmp_path):
-    from bookmark.install.context_writer import SECTION_RE, SCHEMA_LINE, install_section
+    from bookmark.install.context_writer import SCHEMA_LINE, SECTION_RE, install_section
 
     cfg = tmp_path / "CLAUDE.md"
     cfg.write_text("# Existing project docs\n\nSome content here.\n", encoding="utf-8")
@@ -113,7 +109,7 @@ def test_install_section_idempotent(tmp_path):
 
 
 def test_install_section_full_override_new_file(tmp_path):
-    from bookmark.install.context_writer import SECTION_RE, SCHEMA_LINE, install_section
+    from bookmark.install.context_writer import SCHEMA_LINE, SECTION_RE, install_section
 
     cfg = tmp_path / ".gemini" / "system.md"
     result = install_section(cfg, mode="full_override")
@@ -488,7 +484,7 @@ def test_clear_section_returns_false_missing_file(tmp_path):
 
 
 def test_update_all_installed_updates_only_installed(tmp_path, monkeypatch):
-    from bookmark.install.context_writer import has_section, install_section, update_all_installed
+    from bookmark.install.context_writer import install_section, update_all_installed
 
     monkeypatch.setenv("BOOKMARK_HOME", str(tmp_path / "bm_home"))
 
@@ -572,8 +568,8 @@ def test_update_all_installed_returns_modified_paths(tmp_path, monkeypatch):
 
 
 def test_save_triggers_context_update(tmp_path, monkeypatch):
-    from bookmark.install.context_writer import has_section, install_section
     from bookmark.config import load_config
+    from bookmark.install.context_writer import has_section, install_section
 
     monkeypatch.setenv("BOOKMARK_HOME", str(tmp_path / "bm_home"))
     monkeypatch.chdir(tmp_path)
@@ -594,8 +590,8 @@ def test_save_triggers_context_update(tmp_path, monkeypatch):
 
 
 def test_resume_triggers_context_update(tmp_path, monkeypatch):
-    from bookmark.install.context_writer import has_section, install_section
     from bookmark.config import load_config
+    from bookmark.install.context_writer import install_section
 
     monkeypatch.setenv("BOOKMARK_HOME", str(tmp_path / "bm_home"))
     monkeypatch.chdir(tmp_path)
