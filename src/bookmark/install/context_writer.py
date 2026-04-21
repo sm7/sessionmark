@@ -52,8 +52,15 @@ def build_dict(session_str: str) -> dict[str, str]:
         if idx >= 26 or len(working) < 10:
             break
 
-        # Count occurrences of all substrings (length 5-80) in working string
-        # Skip substrings that contain any already-used key letter
+        # Skip key letters that already appear in the working string.
+        # This ensures substitution tokens are unambiguous during decode.
+        while idx < 26 and letters[idx] in working:
+            idx += 1
+        if idx >= 26:
+            break
+
+        # Count occurrences of all substrings (length 5-80) in working string.
+        # Skip substrings that contain any already-used key letter.
         counts: dict[str, int] = {}
         w = len(working)
         for start in range(w):
