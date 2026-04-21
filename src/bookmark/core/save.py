@@ -18,6 +18,7 @@ import os
 import re
 import sys
 import time
+from pathlib import Path
 
 from bookmark.capture.env import capture_env
 from bookmark.capture.files import capture_files
@@ -319,7 +320,19 @@ def save_bookmark(
     conn.close()
 
     # ------------------------------------------------------------------
-    # 8. Confirm
+    # 8. Inject context into installed agent config files (best-effort)
+    # ------------------------------------------------------------------
+    try:
+        from bookmark.install.context_writer import update_all_installed
+
+        session_data = bm.model_dump()
+        session_data["todos"] = [t.model_dump() for t in todos]
+        update_all_installed(Path(effective_cwd), session_data)
+    except Exception:
+        pass
+
+    # ------------------------------------------------------------------
+    # 9. Confirm
     # ------------------------------------------------------------------
     n_files = len(file_entries)
     n_todos = len(todos)
