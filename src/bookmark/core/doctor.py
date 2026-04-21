@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 from pathlib import Path
 
@@ -102,6 +103,19 @@ def run_doctor(config: Config | None = None) -> None:
             )
     else:
         print("- sync                disabled")
+
+    # 8. Per-agent context injection status in current project
+    print(_hline)
+    print("context injection     (current directory)")
+    from bookmark.install.context_writer import CONFIG_FILES, has_section
+
+    cwd = Path(os.getcwd())
+    for agent, cfg in CONFIG_FILES.items():
+        config_file = cwd / cfg["path"]
+        if has_section(config_file):
+            print(f"✓ {agent:<20} {cfg['path']}")
+        else:
+            print(f"- {agent:<20} {cfg['path']}")
 
     print(_hline)
 
