@@ -13,8 +13,10 @@ See design doc §6 for the resume pipeline description.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
+from pathlib import Path
 
 from bookmark.config import Config, load_config
 from bookmark.core.models import Bookmark, FileEntry
@@ -170,6 +172,16 @@ def resume_bookmark(
             print(f"Applied: {cmd}")
         else:
             print(f"Command failed (exit {result.returncode}): {cmd}", file=sys.stderr)
+
+    # Inject context into installed agent config files (best-effort)
+    try:
+        from bookmark.install.context_writer import update_all_installed
+
+        session_data = bm.model_dump()
+        session_data["todos"] = [t.model_dump() for t in todos]
+        update_all_installed(Path(os.getcwd()), session_data)
+    except Exception:
+        pass
 
     return bm
 
