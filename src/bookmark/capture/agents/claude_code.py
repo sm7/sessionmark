@@ -19,7 +19,7 @@ def _hash_project_path(path: str) -> str:
 
 def read_recent_transcript(
     cwd: str,
-    n_messages: int = 20,
+    n_messages: int = 50,
     _base_dir: Path | None = None,
 ) -> list[dict]:
     """Find the most recent Claude Code session for cwd and return last n messages.
