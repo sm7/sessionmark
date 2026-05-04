@@ -12,7 +12,7 @@ from pathlib import Path
 
 def read_recent_transcript(
     cwd: str,
-    n_messages: int = 20,
+    n_messages: int | None = None,
     _base_dir: Path | None = None,
 ) -> list[dict]:
     """Find most recent Codex session and return last n messages.
@@ -51,4 +51,4 @@ def read_recent_transcript(
                     messages.append({"role": role, "content": str(content)})
     except OSError:
         pass
-    return messages[-n_messages:]
+    return messages if n_messages is None else messages[-n_messages:]

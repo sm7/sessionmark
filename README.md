@@ -38,7 +38,7 @@ NEXT STEP
 
 Local-first. No cloud. No auth. Works with Claude Code, Cursor, Codex CLI, Gemini CLI, GitHub Copilot, and Windsurf — and any MCP client.
 
-> **Cross-agent fidelity:** sessionmark recovers goal, files, TODOs, git state, and recent exchange. Open DB connections and running dev servers don't carry over.
+> **Cross-agent fidelity:** sessionmark recovers goal, files, TODOs, git state, and full exchange. Open DB connections and running dev servers don't carry over.
 
 ---
 
@@ -376,7 +376,6 @@ Full config reference (`~/.sessionmark/config.toml`):
 ```toml
 [general]
 default_source = "terminal"
-max_transcript_messages = 20
 recent_file_window_seconds = 7200   # capture files modified in last 2h
 
 [capture]

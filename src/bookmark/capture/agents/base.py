@@ -8,9 +8,10 @@ from typing import Protocol, runtime_checkable
 class AgentCapture(Protocol):
     """Protocol that all agent capture readers must implement."""
 
-    def read_recent_transcript(self, cwd: str, n_messages: int = 20) -> list[dict]:
-        """Return last n_messages from the most recent session in cwd.
+    def read_recent_transcript(self, cwd: str, n_messages: int | None = None) -> list[dict]:
+        """Return messages from the most recent session in cwd.
 
+        n_messages: maximum number of messages to return, or None for all.
         Each message: {"role": "user"|"assistant", "content": str, "timestamp": str?}
         Returns [] on any failure.
         """

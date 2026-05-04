@@ -13,7 +13,7 @@ from pathlib import Path
 
 def read_recent_transcript(
     cwd: str,
-    n_messages: int = 20,
+    n_messages: int | None = None,
     _base_dir: Path | None = None,
 ) -> list[dict]:
     """Best-effort read of most recent Cursor session for cwd."""
@@ -73,7 +73,7 @@ def read_recent_transcript(
     return best_messages
 
 
-def _extract_cursor_messages(data: object, n: int) -> list[dict]:
+def _extract_cursor_messages(data: object, n: int | None) -> list[dict]:
     """Try to extract messages from Cursor's chat history structure."""
     messages = []
     if isinstance(data, list):
@@ -84,4 +84,4 @@ def _extract_cursor_messages(data: object, n: int) -> list[dict]:
                 if role and content and isinstance(content, str):
                     role = "user" if role in ("user", "human") else "assistant"
                     messages.append({"role": role, "content": content})
-    return messages[-n:]
+    return messages if n is None else messages[-n:]

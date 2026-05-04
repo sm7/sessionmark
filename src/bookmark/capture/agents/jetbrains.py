@@ -60,7 +60,7 @@ def _candidate_xml_files(root: Path) -> list[Path]:
     return found
 
 
-def _messages_from_xml(path: Path, n: int) -> list[dict]:
+def _messages_from_xml(path: Path, n: int | None) -> list[dict]:
     """Best-effort extraction of chat messages from a JetBrains XML state file.
 
     The Copilot plugin stores chat as JSON-encoded strings inside XML option
@@ -92,7 +92,7 @@ def _messages_from_xml(path: Path, n: int) -> list[dict]:
     return max(candidates, key=len)
 
 
-def _try_parse_json_messages(raw: str, n: int) -> list[dict]:
+def _try_parse_json_messages(raw: str, n: int | None) -> list[dict]:
     if not raw or raw[0] not in ("[", "{"):
         return []
     try:
@@ -102,7 +102,7 @@ def _try_parse_json_messages(raw: str, n: int) -> list[dict]:
     return _extract_messages(data, n)
 
 
-def _extract_messages(data: object, n: int) -> list[dict]:
+def _extract_messages(data: object, n: int | None) -> list[dict]:
     if isinstance(data, dict):
         # Try common wrapper keys
         for key in ("conversations", "history", "messages", "chat"):
@@ -122,12 +122,12 @@ def _extract_messages(data: object, n: int) -> list[dict]:
         if role and content and isinstance(content, str):
             role = "user" if role in ("user", "human") else "assistant"
             messages.append({"role": role, "content": content})
-    return messages[-n:]
+    return messages if n is None else messages[-n:]
 
 
 def read_recent_transcript(
     cwd: str,
-    n_messages: int = 20,
+    n_messages: int | None = None,
     _base_dir: Path | None = None,
 ) -> list[dict]:
     """Best-effort read of most recent JetBrains Copilot Chat session."""

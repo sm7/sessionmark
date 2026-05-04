@@ -145,12 +145,10 @@ def extract_transcript_context(transcript_path: Path) -> tuple[str, list[str]]:
         except json.JSONDecodeError:
             continue
 
-    # Commands: iterate in reverse, collect unique Bash tool_use commands
+    # Commands: collect all unique Bash tool_use commands (most recent first)
     seen_cmds: set[str] = set()
     recent_commands: list[str] = []
     for msg in reversed(messages):
-        if len(recent_commands) >= 5:
-            break
         if msg.get("type") == "tool_use":
             tool_name = (msg.get("name") or "").lower()
             if tool_name == "bash":
@@ -159,32 +157,39 @@ def extract_transcript_context(transcript_path: Path) -> tuple[str, list[str]]:
                     seen_cmds.add(cmd)
                     recent_commands.append(cmd)
 
-    # Context: last 2 assistant messages, text content only
+    # Context: all assistant messages + last user message, full text
     assistant_texts: list[str] = []
+    last_user_text: str = ""
     for msg in messages:
-        if msg.get("role") != "assistant":
-            continue
+        role = msg.get("role", "")
         content = msg.get("content", "")
-        if isinstance(content, str) and content.strip():
-            assistant_texts.append(content.strip())
+        text = ""
+        if isinstance(content, str):
+            text = content.strip()
         elif isinstance(content, list):
             text_parts = [
                 part.get("text", "").strip()
                 for part in content
                 if isinstance(part, dict) and part.get("type") == "text"
             ]
-            combined = " ".join(p for p in text_parts if p)
-            if combined:
-                assistant_texts.append(combined)
+            text = " ".join(p for p in text_parts if p)
+        if not text:
+            continue
+        if role == "assistant":
+            assistant_texts.append(text)
+        elif role == "user":
+            last_user_text = text
 
     context = ""
     if assistant_texts:
-        last_two = " ".join(assistant_texts[-2:])
-        sentences = re.split(r"[.!?]+", last_two)
+        full_text = " ".join(assistant_texts)
+        sentences = re.split(r"[.!?]+", full_text)
         sentences = [s.strip() for s in sentences if s.strip()]
-        context = ". ".join(sentences[:2])
+        context = ". ".join(sentences)
         if context and context[-1] not in ".!?":
             context += "."
+    if last_user_text and context:
+        context = last_user_text.strip() + " → " + context
 
     return context, recent_commands
 
