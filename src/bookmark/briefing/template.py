@@ -141,16 +141,16 @@ def render_briefing(
                 content = msg.get("content", "")
                 if not isinstance(content, str):
                     content = str(content)
-                lines.append(f"{role_label} → {_truncate(content, 400)}")
+                lines.append(f"{role_label} → {content}")
             lines.append("")
         else:
             last_user, last_assistant = _last_exchange(transcript)
             if last_user or last_assistant:
                 lines.append("LAST AGENT EXCHANGE")
                 if last_user:
-                    lines.append(f"  you   → {_truncate(last_user, 300)}")
+                    lines.append(f"  you   → {last_user}")
                 if last_assistant:
-                    lines.append(f"  agent → {_truncate(last_assistant, 300)}")
+                    lines.append(f"  agent → {last_assistant}")
                 lines.append("")
 
     # -----------------------------------------------------------------------

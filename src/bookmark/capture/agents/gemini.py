@@ -27,7 +27,7 @@ def _candidate_dirs(_base_dir: Path | None = None) -> list[Path]:
 
 def read_recent_transcript(
     cwd: str,
-    n_messages: int = 20,
+    n_messages: int | None = None,
     _base_dir: Path | None = None,
 ) -> list[dict]:
     for sessions_dir in _candidate_dirs(_base_dir):
@@ -58,5 +58,5 @@ def read_recent_transcript(
                         continue
         except OSError:
             pass
-        return messages[-n_messages:]
+        return messages if n_messages is None else messages[-n_messages:]
     return []

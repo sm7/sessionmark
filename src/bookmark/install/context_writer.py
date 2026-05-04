@@ -145,12 +145,10 @@ def extract_transcript_context(transcript_path: Path) -> tuple[str, list[str]]:
         except json.JSONDecodeError:
             continue
 
-    # Commands: iterate in reverse, collect unique Bash tool_use commands
+    # Commands: collect all unique Bash tool_use commands (most recent first)
     seen_cmds: set[str] = set()
     recent_commands: list[str] = []
     for msg in reversed(messages):
-        if len(recent_commands) >= 10:
-            break
         if msg.get("type") == "tool_use":
             tool_name = (msg.get("name") or "").lower()
             if tool_name == "bash":
@@ -159,7 +157,7 @@ def extract_transcript_context(transcript_path: Path) -> tuple[str, list[str]]:
                     seen_cmds.add(cmd)
                     recent_commands.append(cmd)
 
-    # Context: last 5 assistant messages + last user message, text content only
+    # Context: all assistant messages + last user message, full text
     assistant_texts: list[str] = []
     last_user_text: str = ""
     for msg in messages:
@@ -184,17 +182,14 @@ def extract_transcript_context(transcript_path: Path) -> tuple[str, list[str]]:
 
     context = ""
     if assistant_texts:
-        last_five = " ".join(assistant_texts[-5:])
-        sentences = re.split(r"[.!?]+", last_five)
+        full_text = " ".join(assistant_texts)
+        sentences = re.split(r"[.!?]+", full_text)
         sentences = [s.strip() for s in sentences if s.strip()]
-        context = ". ".join(sentences[:5])
+        context = ". ".join(sentences)
         if context and context[-1] not in ".!?":
             context += "."
     if last_user_text and context:
-        # Prepend what the user was working on for richer context
-        user_summary = last_user_text.split("\n")[0][:120].strip()
-        if user_summary:
-            context = user_summary + " → " + context
+        context = last_user_text.strip() + " → " + context
 
     return context, recent_commands
 

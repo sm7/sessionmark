@@ -19,7 +19,7 @@ def _hash_project_path(path: str) -> str:
 
 def read_recent_transcript(
     cwd: str,
-    n_messages: int = 50,
+    n_messages: int | None = None,
     _base_dir: Path | None = None,
 ) -> list[dict]:
     """Find the most recent Claude Code session for cwd and return last n messages.
@@ -103,4 +103,4 @@ def _parse_jsonl_messages(path: Path, n: int) -> list[dict]:
                     messages.append({"role": role, "content": str(content)})
     except OSError:
         pass
-    return messages[-n:]
+    return messages if n is None else messages[-n:]

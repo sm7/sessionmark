@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 
 
-def read_recent_transcript(cwd: str, n_messages: int = 20) -> list[dict]:
+def read_recent_transcript(cwd: str, n_messages: int | None = None) -> list[dict]:
     """Parse .aider.chat.history.md from cwd or its parents."""
     history_file = None
     for parent in [Path(cwd)] + list(Path(cwd).parents):
@@ -49,4 +49,4 @@ def read_recent_transcript(cwd: str, n_messages: int = 20) -> list[dict]:
     except OSError:
         pass
 
-    return messages[-n_messages:]
+    return messages if n_messages is None else messages[-n_messages:]

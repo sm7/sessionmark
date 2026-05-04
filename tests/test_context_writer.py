@@ -333,7 +333,7 @@ def test_extract_transcript_context_deduplicates_commands(tmp_path):
     assert commands.count("pytest tests/") == 1
 
 
-def test_extract_transcript_context_max_10_commands(tmp_path):
+def test_extract_transcript_context_all_commands(tmp_path):
     from bookmark.install.context_writer import extract_transcript_context
 
     transcript = tmp_path / "transcript.jsonl"
@@ -344,7 +344,7 @@ def test_extract_transcript_context_max_10_commands(tmp_path):
     transcript.write_text(_make_transcript(messages), encoding="utf-8")
 
     _, commands = extract_transcript_context(transcript)
-    assert len(commands) <= 10
+    assert len(commands) == 15
 
 
 def test_extract_transcript_context_assistant_text(tmp_path):

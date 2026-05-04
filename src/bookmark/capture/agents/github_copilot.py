@@ -25,7 +25,7 @@ def _storage_root(_base_dir: Path | None = None) -> Path:
 
 def read_recent_transcript(
     cwd: str,
-    n_messages: int = 20,
+    n_messages: int | None = None,
     _base_dir: Path | None = None,
 ) -> list[dict]:
     """Best-effort read of most recent GitHub Copilot Chat session for cwd."""
@@ -73,7 +73,7 @@ def read_recent_transcript(
     return best_messages
 
 
-def _extract_messages(data: object, n: int) -> list[dict]:
+def _extract_messages(data: object, n: int | None) -> list[dict]:
     messages: list[dict] = []
     if isinstance(data, list):
         items = data
@@ -89,4 +89,4 @@ def _extract_messages(data: object, n: int) -> list[dict]:
         if role and content and isinstance(content, str):
             role = "user" if role in ("user", "human") else "assistant"
             messages.append({"role": role, "content": content})
-    return messages[-n:]
+    return messages if n is None else messages[-n:]
